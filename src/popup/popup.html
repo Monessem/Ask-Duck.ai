@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Duck.ai</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="popup-header">
+    <div class="brand">
+      <img class="logo-img" src="../../icons/icon-48.png" alt="" aria-hidden="true" />
+      <div class="brand-text">
+        <h1>Ask Duck.ai</h1>
+        <p class="subtitle" data-i18n="popupSubtitle">Quick AI actions for any webpage</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="open-settings" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="popup-body">
+    <div class="selection-banner" id="selection-banner" hidden>
+      <span class="selection-label" data-i18n="popupSelection">Selected text:</span>
+      <span class="selection-preview" id="selection-preview"></span>
+    </div>
+
+    <!-- Quick Actions (recent) -->
+    <div class="quick-actions-bar" id="quick-actions-bar" hidden>
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Page-level actions -->
+    <div class="page-actions" id="page-actions">
+      <button class="btn btn-secondary btn-sm" id="page-summarize" title="Summarize this page">
+        📄 <span data-i18n="pageSummarize">Summarize page</span>
+      </button>
+      <button class="btn btn-secondary btn-sm" id="page-tldr" title="TL;DR this page">
+        ⚡ <span data-i18n="pageTldr">TL;DR page</span>
+      </button>
+    </div>
+
+    <nav class="categories" aria-label="Action categories">
+      <!-- Categories rendered by JS -->
+    </nav>
+
+    <div class="actions" id="actions-container" hidden>
+      <header class="actions-header">
+        <button class="back-btn" id="back-btn" aria-label="Back to categories">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          <span data-i18n="popupBack">Back</span>
+        </button>
+        <h2 id="actions-title"></h2>
+      </header>
+      <ul class="actions-list" id="actions-list"></ul>
+    </div>
+
+    <div class="quick-actions" id="quick-actions">
+      <button class="btn btn-primary btn-block" id="ask-default">
+        <span data-i18n="popupAskDefault">Ask with default action</span>
+      </button>
+      <button class="btn btn-secondary btn-block" id="open-history">
+        <span data-i18n="popupHistory">Conversation history</span>
+      </button>
+      <button class="btn btn-secondary btn-block" id="open-shortcuts">
+        <span data-i18n="popupShortcuts">Keyboard shortcuts</span>
+      </button>
+      <button class="btn btn-secondary btn-block" id="open-duckai">
+        <span data-i18n="popupOpenDuckAi">Open Duck.ai</span>
+      </button>
+      <button class="btn btn-secondary btn-block" id="open-support">
+        <span>💬 <span data-i18n="popupSupport">Support</span></span>
+      </button>
+      <button class="btn btn-bmac btn-block" id="open-bmac">
+        <span>☕ <span data-i18n="popupBmac">Buy Me a Coffee</span></span>
+      </button>
+    </div>
+  </main>
+
+  <footer class="popup-footer">
+    <span class="version" id="version"></span>
+    <span class="dot" aria-hidden="true">·</span>
+    <a href="#" id="open-about" data-i18n="popupAbout">About</a>
+  </footer>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

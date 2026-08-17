@@ -1,0 +1,947 @@
+{
+  "extName": {
+    "message": "اسأل Duck.ai"
+  },
+  "extShortName": {
+    "message": "اسأل Duck.ai"
+  },
+  "extDescription": {
+    "message": "استخدم Duck.ai مباشرة من فايرفوكس لشرح أي نص، ترجمة، إعادة كتابة، تحليل، بحث، تصحيح التعليمات البرمجية والمزيد."
+  },
+  "actionTitle": {
+    "message": "مساعد Duck.ai"
+  },
+  "commandOpenAssistant": {
+    "message": "افتح مساعد Duck.ai مع النص المحدد الحالي"
+  },
+  "commandOpenPopup": {
+    "message": "افتح إعدادات مساعد Duck.ai"
+  },
+  "contextMenuRoot": {
+    "message": "اسأل Duck.ai"
+  },
+  "contextMenuSettings": {
+    "message": "الإعدادات"
+  },
+  "contextMenuSupport": {
+    "message": "الدعم"
+  },
+  "contextMenuBmac": {
+    "message": "اشتر لي قهوة"
+  },
+  "contextMenuSendPage": {
+    "message": "أرسل هذه الصفحة إلى Duck.ai"
+  },
+  "contextMenuSummarizePage": {
+    "message": "لخّص هذه الصفحة"
+  },
+  "tabSupport": {
+    "message": "الدعم"
+  },
+  "actionSummaryGeneral": {
+    "message": "لخّص"
+  },
+  "categoryMyPrompts": {
+    "message": "برومبتاتي"
+  },
+  "tabMyPrompts": {
+    "message": "برومبتاتي"
+  },
+  "myPromptsIntro": {
+    "message": "أنشئ برومبتات مخصصة خاصة بك. تظهر في فئة \"برومبتاتي\" في قائمة الإجراءات وقائمة السياق. استخدمها لأي مهمة لا تغطيها الإجراءات المدمجة."
+  },
+  "myPromptsAddNew": {
+    "message": "إضافة برومبت جديد"
+  },
+  "myPromptsAddBtn": {
+    "message": "إضافة برومبت"
+  },
+  "myPromptsDelete": {
+    "message": "حذف"
+  },
+  "myPromptsSave": {
+    "message": "حفظ"
+  },
+  "myPromptsSaved": {
+    "message": "تم حفظ البرومبت"
+  },
+  "myPromptsAdded": {
+    "message": "تمت إضافة البرومبت"
+  },
+  "myPromptsDeleted": {
+    "message": "تم حذف البرومبت"
+  },
+  "myPromptsError": {
+    "message": "يرجى إدخال الاسم والتعليمات"
+  },
+  "myPromptsEmpty": {
+    "message": "لا توجد برومبتات مخصصة بعد. أضف واحدة بالأعلى."
+  },
+  "myPromptsEmptyMenu": {
+    "message": "لا توجد برومبتات مخصصة بعد. أضفها في الإعدادات → برومبتاتي."
+  },
+  "myPromptsEditLabel": {
+    "message": "اسم البرومبت:"
+  },
+  "myPromptsConfirmDelete": {
+    "message": "حذف هذا البرومبت؟"
+  },
+  "supportSubtitle": {
+    "message": "الدعم والتبرع"
+  },
+  "supportTitle": {
+    "message": "شكراً لاستخدامك Ask Duck.ai!"
+  },
+  "supportIntro": {
+    "message": "Ask Duck.ai إضافة فايرفوكس مجانية ومفتوحة المصدر. إذا وجدتها مفيدة، يرجى النظر في دعم تطويرها."
+  },
+  "supportBmacTitle": {
+    "message": "اشتر لي قهوة"
+  },
+  "supportBmacDesc": {
+    "message": "إذا كانت هذه الإضافة توفر وقتك، فكر في شراء قهوة لي. كل مساهمة تساعد في استمرار المشروع وتحسينه."
+  },
+  "supportFeedbackTitle": {
+    "message": "الملاحظات والمشاكل"
+  },
+  "supportFeedbackDesc": {
+    "message": "وجدت خطأ؟ لديك طلب ميزة؟ ملاحظاتك تساعد في جعل هذه الإضافة أفضل للجميع."
+  },
+  "supportRateTitle": {
+    "message": "قيّم الإضافة"
+  },
+  "supportRateDesc": {
+    "message": "ساعد الآخرين في اكتشاف Ask Duck.ai بتقييمها على إضافات فايرفوكس."
+  },
+  "supportDocsTitle": {
+    "message": "التوثيق"
+  },
+  "supportDocsDesc": {
+    "message": "اقرأ التوثيق لتعرف كل الميزات وكيف تحصل على أقصى استفادة من الإضافة."
+  },
+  "supportFooter": {
+    "message": "Ask Duck.ai غير تابعة لـ DuckDuckGo أو معتمدة أو مدعومة منها. \"Duck.ai\" علامة تجارية لأصحابها."
+  },
+  "categoryCommon": {
+    "message": "أسئلة شائعة"
+  },
+  "categorySummary": {
+    "message": "تلخيص سريع"
+  },
+  "categoryTranslate": {
+    "message": "ترجمة"
+  },
+  "categoryGrammar": {
+    "message": "مساعد القواعد"
+  },
+  "categoryCritical": {
+    "message": "التفكير النقدي"
+  },
+  "categoryCode": {
+    "message": "مساعد التعليمات البرمجية"
+  },
+  "categoryLearning": {
+    "message": "مساعد التعلم"
+  },
+  "categoryWork": {
+    "message": "العمل والإنتاجية"
+  },
+  "categoryChef": {
+    "message": "مساعد الطبخ"
+  },
+  "categoryResearch": {
+    "message": "مساعد البحث"
+  },
+  "categorySeo": {
+    "message": "تحسين محركات البحث والتسويق"
+  },
+  "categorySecurity": {
+    "message": "تحليل الأمان"
+  },
+  "actionSummaryOne": {
+    "message": "تلخيص في جملة واحدة"
+  },
+  "actionSummaryPoints": {
+    "message": "نقاط رئيسية"
+  },
+  "actionSummaryActions": {
+    "message": "مهام قابلة للتنفيذ"
+  },
+  "actionSummaryMatrix": {
+    "message": "مصفوفة قرار"
+  },
+  "actionLearningQuiz": {
+    "message": "أنشئ اختباراً"
+  },
+  "actionLearningFlashcards": {
+    "message": "بطاقات تعليمية"
+  },
+  "actionLearningTeach": {
+    "message": "اشرح كأنك تعلّم"
+  },
+  "actionLearningExercise": {
+    "message": "تمرين تطبيقي"
+  },
+  "actionLearningMnemonic": {
+    "message": "طريقة لتذكر المفاهيم"
+  },
+  "actionWorkEmail": {
+    "message": "رد على إيميل"
+  },
+  "actionWorkMeeting": {
+    "message": "ملاحظات اجتماع"
+  },
+  "actionWorkPlan": {
+    "message": "خطة عمل"
+  },
+  "actionWorkStatus": {
+    "message": "تحديث حالة المشروع"
+  },
+  "actionWorkPitch": {
+    "message": "مخطط عرض تقديمي"
+  },
+  "actionSeoKeywords": {
+    "message": "كلمات مفتاحية SEO"
+  },
+  "actionSeoMeta": {
+    "message": "وصف ميتا"
+  },
+  "actionSeoSocial": {
+    "message": "منشور سوشيال ميديا"
+  },
+  "actionSeoAdcopy": {
+    "message": "نص إعلاني"
+  },
+  "actionSeoHashtags": {
+    "message": "اقتراح هاشتاجات"
+  },
+  "actionSecurityPhishing": {
+    "message": "فحص الاحتيال"
+  },
+  "actionSecurityPrivacy": {
+    "message": "تدقيق الخصوصية"
+  },
+  "actionSecurityPassword": {
+    "message": "قوة كلمة المرور"
+  },
+  "actionSecurityVuln": {
+    "message": "فحص الثغرات"
+  },
+  "pageSummarize": {
+    "message": "لخّص الصفحة"
+  },
+  "pageTldr": {
+    "message": "خلاصة الصفحة"
+  },
+  "actionThink": {
+    "message": "ما رأيك في هذا؟"
+  },
+  "actionFactCheck": {
+    "message": "تحقق من الحقائق"
+  },
+  "actionEli5": {
+    "message": "اشرح كأنني طفل"
+  },
+  "actionDebate": {
+    "message": "ناقش"
+  },
+  "actionTldr": {
+    "message": "الخلاصة"
+  },
+  "actionTranslate": {
+    "message": "ترجم"
+  },
+  "actionTranslateLanguage": {
+    "message": "اللغة الهدف"
+  },
+  "actionTranslateChoose": {
+    "message": "اختر لغة..."
+  },
+  "actionGrammarCorrect": {
+    "message": "صحح القواعد"
+  },
+  "actionGrammarLonger": {
+    "message": "اجعل النص أطول"
+  },
+  "actionGrammarShorter": {
+    "message": "اجعل النص أقصر"
+  },
+  "actionGrammarProfessional": {
+    "message": "اجعله أكثر رسمية"
+  },
+  "actionGrammarLessProfessional": {
+    "message": "اجعله أقل رسمية"
+  },
+  "actionGrammarClear": {
+    "message": "أعد الكتابة بوضوح"
+  },
+  "actionGrammarStyle": {
+    "message": "حسّن أسلوب الكتابة"
+  },
+  "actionGrammarSpelling": {
+    "message": "صحح الإملاء"
+  },
+  "actionCriticalQuestion": {
+    "message": "اطرح عليّ أسئلة"
+  },
+  "actionCriticalIsTrue": {
+    "message": "هل هذا صحيح؟"
+  },
+  "actionCriticalAssumptions": {
+    "message": "ابحث عن الافتراضات"
+  },
+  "actionCriticalChallenge": {
+    "message": "تحدّى هذه الفكرة"
+  },
+  "actionCriticalPerspective": {
+    "message": "وجهة نظر جديدة"
+  },
+  "actionCriticalCounterarguments": {
+    "message": "اعطِ حججاً مضادة"
+  },
+  "actionCriticalFallacies": {
+    "message": "حدد المغالطات المنطقية"
+  },
+  "actionCriticalMissing": {
+    "message": "ما الذي يفوتني؟"
+  },
+  "actionCodeDebug": {
+    "message": "تصحيح التعليمات البرمجية"
+  },
+  "actionCodeImprove": {
+    "message": "حسّن هذه التعليمات البرمجية"
+  },
+  "actionCodeWrong": {
+    "message": "ما الخطأ في هذه التعليمات البرمجية؟"
+  },
+  "actionCodeWhat": {
+    "message": "ماذا تفعل هذه التعليمات البرمجية؟"
+  },
+  "actionCodeDangerous": {
+    "message": "هل هذه التعليمات البرمجية خطرة؟"
+  },
+  "actionCodeClean": {
+    "message": "تعليمات برمجية نظيفة"
+  },
+  "actionCodeExplain": {
+    "message": "اشرح هذه التعليمات البرمجية"
+  },
+  "actionCodeOptimize": {
+    "message": "حسّن أداء هذه التعليمات البرمجية"
+  },
+  "actionCodeComments": {
+    "message": "أضف تعليقات"
+  },
+  "actionCodeConvert": {
+    "message": "حوّل إلى لغة برمجة أخرى"
+  },
+  "actionCodeConvertLang": {
+    "message": "اللغة الهدف"
+  },
+  "actionChefRecipe": {
+    "message": "أفكار وصفات"
+  },
+  "actionChefSubstitutes": {
+    "message": "بدائل المكونات"
+  },
+  "actionChefStory": {
+    "message": "ما قصة هذا الطبق؟"
+  },
+  "actionChefNutrition": {
+    "message": "معلومات غذائية"
+  },
+  "actionChefSafety": {
+    "message": "سلامة الأطعمة"
+  },
+  "actionChefCooking": {
+    "message": "تعليمات الطبخ"
+  },
+  "actionChefHealthier": {
+    "message": "اجعله أكثر صحة"
+  },
+  "actionChefVegetarian": {
+    "message": "بديل نباتي"
+  },
+  "actionChefShopping": {
+    "message": "قائمة التسوق"
+  },
+  "actionResearchSources": {
+    "message": "ابحث عن مصادر"
+  },
+  "actionResearchAnalyze": {
+    "message": "حلّل البيانات"
+  },
+  "actionResearchDeepDive": {
+    "message": "تعمّق"
+  },
+  "actionResearchNews": {
+    "message": "آخر الأخبار"
+  },
+  "actionResearchSummarize": {
+    "message": "لخّص البحث"
+  },
+  "actionResearchCompare": {
+    "message": "قارن المصادر"
+  },
+  "actionResearchOpposing": {
+    "message": "اعثر على آراء معارضة"
+  },
+  "actionResearchEvidence": {
+    "message": "اشرح الأدلة"
+  },
+  "actionResearchQuestions": {
+    "message": "أنشئ أسئلة بحثية"
+  },
+  "langArabic": {
+    "message": "العربية"
+  },
+  "langEnglish": {
+    "message": "الإنجليزية"
+  },
+  "langFrench": {
+    "message": "الفرنسية"
+  },
+  "langGerman": {
+    "message": "الألمانية"
+  },
+  "langSpanish": {
+    "message": "الإسبانية"
+  },
+  "langItalian": {
+    "message": "الإيطالية"
+  },
+  "langPortuguese": {
+    "message": "البرتغالية"
+  },
+  "langTurkish": {
+    "message": "التركية"
+  },
+  "langChinese": {
+    "message": "الصينية"
+  },
+  "langJapanese": {
+    "message": "اليابانية"
+  },
+  "langKorean": {
+    "message": "الكورية"
+  },
+  "langRussian": {
+    "message": "الروسية"
+  },
+  "tabDuckAi": {
+    "message": "Duck.ai"
+  },
+  "duckAiIntro": {
+    "message": "يفتح الامتداد Duck.ai في تبويب جديد ويملأ المحادثة بالبرومبت تلقائيًا. أنت تختار نموذج الذكاء الاصطناعي داخل Duck.ai نفسه — لا حاجة لصيانة قائمة نماذج هنا."
+  },
+  "optAutoSubmit": {
+    "message": "إرسال البرومبت تلقائيًا"
+  },
+  "optAutoSubmitHint": {
+    "message": "انقر \"إرسال\" تلقائيًا بعد ملء البرومبت في Duck.ai. عطّله لمراجعة البرومبت قبل الإرسال."
+  },
+  "popupSubtitle": {
+    "message": "إجراءات ذكاء اصطناعي سريعة لأي صفحة ويب"
+  },
+  "popupSelection": {
+    "message": "النص المحدد:"
+  },
+  "popupBack": {
+    "message": "رجوع"
+  },
+  "popupAskDefault": {
+    "message": "اسأل بالإجراء الافتراضي"
+  },
+  "popupHistory": {
+    "message": "سجل المحادثات"
+  },
+  "popupShortcuts": {
+    "message": "اختصارات لوحة المفاتيح"
+  },
+  "popupOpenDuckAi": {
+    "message": "افتح Duck.ai"
+  },
+  "popupSupport": {
+    "message": "الدعم"
+  },
+  "popupBmac": {
+    "message": "اشتر لي قهوة"
+  },
+  "popupAbout": {
+    "message": "حول"
+  },
+  "historyDisabled": {
+    "message": "السجل معطّل. فعّله من الإعدادات."
+  },
+  "historyEmpty": {
+    "message": "لا توجد محادثات بعد."
+  },
+  "historyClear": {
+    "message": "مسح كل السجل"
+  },
+  "optionsSubtitle": {
+    "message": "الإعدادات"
+  },
+  "tabGeneral": {
+    "message": "عام"
+  },
+  "tabPrivacy": {
+    "message": "الخصوصية"
+  },
+  "tabShortcuts": {
+    "message": "الاختصارات"
+  },
+  "tabAbout": {
+    "message": "حول"
+  },
+  "tabPrompts": {
+    "message": "برومبت مخصص"
+  },
+  "customPromptsIntro": {
+    "message": "خصص التعليمات المُرسلة إلى Duck.ai لكل إجراء. اترك الحقل فارغاً لاستخدام التعليمات الافتراضية. استخدم {{input}} كعنصر نائب لإدخال الإجراء (مثل اللغة الهدف)."
+  },
+  "customPromptsAllCategories": {
+    "message": "كل الفئات"
+  },
+  "customPromptsResetAll": {
+    "message": "إعادة تعيين الكل لللافتراضي"
+  },
+  "customPromptsReset": {
+    "message": "إعادة تعيين"
+  },
+  "customPromptsSave": {
+    "message": "حفظ"
+  },
+  "statusPromptSaved": {
+    "message": "تم حفظ البرومبت"
+  },
+  "statusPromptReset": {
+    "message": "تمت إعادة تعيين البرومبت"
+  },
+  "statusPromptsReset": {
+    "message": "تمت إعادة تعيين كل البرومبت"
+  },
+  "confirmResetAllPrompts": {
+    "message": "إعادة تعيين كل البرومبت المخصصة لللافتراضي؟"
+  },
+  "optAutoSubmitHintUpdated": {
+    "message": "انقر \"إرسال\" تلقائياً بعد ملء البرومبت في Duck.ai. عطّله لمراجعة البرومبت قبل الإرسال (موصى به — يقلل اكتشاف البوت)."
+  },
+  "optResponseLanguage": {
+    "message": "لغة ردود Duck.ai"
+  },
+  "optResponseLanguageHint": {
+    "message": "اختر لغة ردود Duck.ai. \"تلقائي\" يترك القرار لـ Duck.ai بناءً على البرومبت."
+  },
+  "respLangAuto": {
+    "message": "تلقائي"
+  },
+  "optTextDirection": {
+    "message": "اتجاه النص (RTL/LTR)"
+  },
+  "optTextDirectionHint": {
+    "message": "تحكم في اتجاه نص ردود Duck.ai. \"تلقائي\" يكتشف بناءً على لغة الرد (RTL للعربية والفارسية والعبرية والأردية). blocks البرمجية تبقى LTR."
+  },
+  "textDirAuto": {
+    "message": "تلقائي (حسب اللغة)"
+  },
+  "textDirLtr": {
+    "message": "LTR (من اليسار لليمين)"
+  },
+  "textDirRtl": {
+    "message": "RTL (من اليمين لليسار)"
+  },
+  "optSmartDetection": {
+    "message": "اكتشاف ذكي للسياق"
+  },
+  "optSmartDetectionHint": {
+    "message": "عند التفعيل، القائمة العائمة تكتشف نوع المحتوى تلقائياً وتعيد ترتيب الفئات — مساعد التعليمات البرمجية للكود، مساعد الطبخ للوصفات، البحث للمقالات، القواعد للفقرات. كل الفئات تبقى متاحة."
+  },
+  "optResetHint": {
+    "message": "استعادة كل الإعدادات للقيم الافتراضية. البرومبتات المخصصة وبرومبتات المستخدم تُحفظ."
+  },
+  "optFloatingButton": {
+    "message": "زر التحديد العائم"
+  },
+  "optFloatingButtonHint": {
+    "message": "اعرض زر Duck.ai صغير بجانب النص المحدد."
+  },
+  "optContextMenu": {
+    "message": "قائمة السياق"
+  },
+  "optContextMenuHint": {
+    "message": "أضف \"اسأل Duck.ai\" إلى قائمة النقر بالزر الأيمن."
+  },
+  "optDefaultAction": {
+    "message": "الإجراء الافتراضي"
+  },
+  "optDefaultActionHint": {
+    "message": "يُستخدم عند استدعاء المساعد دون اختيار إجراء."
+  },
+  "optDefaultLanguage": {
+    "message": "لغة الترجمة الافتراضية"
+  },
+  "optDefaultLanguageHint": {
+    "message": "تُستخدم عند استدعاء الترجمة من اختصار."
+  },
+  "optTheme": {
+    "message": "المظهر"
+  },
+  "optThemeHint": {
+    "message": "اختر شكل المساعد."
+  },
+  "themeSystem": {
+    "message": "النظام"
+  },
+  "themeLight": {
+    "message": "فاتح"
+  },
+  "themeDark": {
+    "message": "داكن"
+  },
+  "optDisplayMode": {
+    "message": "عرض الرد"
+  },
+  "optDisplayModeHint": {
+    "message": "اعرض رد Duck.ai في شريط جانبي على الصفحة الحالية، أو افتح Duck.ai في تبويب جديد بالكامل."
+  },
+  "displaySidebar": {
+    "message": "شريط جانبي"
+  },
+  "displayTab": {
+    "message": "تبويب كامل"
+  },
+  "optTestConnection": {
+    "message": "الاتصال"
+  },
+  "optTestConnectionHint": {
+    "message": "اختبر إمكانية الوصول إلى Duck.ai من هذا المتصفح."
+  },
+  "optTestBtn": {
+    "message": "اختبر الاتصال"
+  },
+  "testOk": {
+    "message": "نعم"
+  },
+  "testFail": {
+    "message": "فشل"
+  },
+  "optUnofficialNote": {
+    "message": "ملاحظة: لا يوفر Duck.ai واجهة برمجة تطبيقات رسمية. يفتح هذا الامتداد واجهة ويب Duck.ai العامة ويملأ صندوق المحادثة — تماماً كما تفعل يدوياً. راجع تبويب \"حول\" للتفاصيل."
+  },
+  "privacySummary": {
+    "message": "النص الذي تحدده على صفحات الويب يُرسل فقط إلى Duck.ai. لا قياس عن بُعد، لا تحليلات، لا أطراف ثالثة. السجل يبقى على جهازك ومعطّل افتراضياً."
+  },
+  "privacyDataTitle": {
+    "message": "ما البيانات التي تتم معالجتها؟"
+  },
+  "privacyData1": {
+    "message": "النص المحدد: النص الذي تبرزه على صفحة ويب. يُرسل إلى Duck.ai فقط عند تفعيلك لإجراء — أبداً تلقائياً، أبداً لأي خادم آخر."
+  },
+  "privacyData2": {
+    "message": "اختيار الإجراء: الإجراء الذي تختاره (مثلاً \"لخّص\"). يُعالَج محلياً؛ يصبح جزءاً من البرومبت المُرسل إلى Duck.ai."
+  },
+  "privacyData3": {
+    "message": "الإعدادات والبرومبتات: تُخزَّن محلياً عبر browser.storage.local. لا تُرفع أبداً."
+  },
+  "privacyData4": {
+    "message": "السجل (اختياري): معطّل افتراضياً. عند التفعيل، تُحفظ المحادثات على جهازك فقط."
+  },
+  "privacyData5": {
+    "message": "لا بيانات اعتماد: الامتداد لا يستخدم مفاتيح API أو رموز أو حسابات. يفتح موقع Duck.ai العام كزائر عادي."
+  },
+  "privacyData6": {
+    "message": "شروط Duck.ai: بمجرد وصول نصك إلى Duck.ai، يخضع لشروط وخصوصية Duck.ai. راجعها لفهم كيف يتعامل DuckDuckGo مع مدخلاتك."
+  },
+  "permTabs": {
+    "message": "يفتح ويفعّل تبويب Duck.ai."
+  },
+  "permDownloads": {
+    "message": "يحفظ ملفات النسخ الاحتياطي عند تصدير الإعدادات."
+  },
+  "optHistoryEnabled": {
+    "message": "تخزين سجل المحادثات محلياً"
+  },
+  "optHistoryEnabledHint": {
+    "message": "عند التفعيل، تُحفظ المحادثات على هذا الجهاز فقط. لا يُرفع شيء."
+  },
+  "optHistoryMax": {
+    "message": "الحد الأقصى للمحادثات المخزنة"
+  },
+  "optHistoryMaxHint": {
+    "message": "تُحذف المحادثات الأقدم تلقائياً."
+  },
+  "optClearHistory": {
+    "message": "مسح سجل المحادثات"
+  },
+  "optClearHistoryHint": {
+    "message": "احذف جميع المحادثات المخزنة نهائياً من هذا الجهاز."
+  },
+  "optClearHistoryBtn": {
+    "message": "مسح السجل"
+  },
+  "optClearAll": {
+    "message": "مسح كل بيانات الامتداد"
+  },
+  "optClearAllHint": {
+    "message": "أزل الإعدادات والسجل وكل البيانات المخزنة محلياً."
+  },
+  "optClearAllBtn": {
+    "message": "مسح كل البيانات"
+  },
+  "backupTitle": {
+    "message": "النسخ الاحتياطي والاستعادة"
+  },
+  "optExport": {
+    "message": "تصدير كل البيانات"
+  },
+  "optExportHint": {
+    "message": "تنزيل نسخة احتياطية JSON من كل الإعدادات والبرومبتات المخصصة وبرومبتات المستخدم."
+  },
+  "optExportBtn": {
+    "message": "تصدير"
+  },
+  "optImport": {
+    "message": "استيراد البيانات"
+  },
+  "optImportHint": {
+    "message": "استعادة من ملف نسخة احتياطية JSON. اختر ما إذا كنت تريد الدمج أو الاستبدال."
+  },
+  "optImportMerge": {
+    "message": "استيراد (دمج)"
+  },
+  "optImportReplace": {
+    "message": "استيراد (استبدال)"
+  },
+  "statusExported": {
+    "message": "بدأ التصدير"
+  },
+  "statusExportFailed": {
+    "message": "فشل التصدير"
+  },
+  "statusImported": {
+    "message": "تم الاستيراد بنجاح"
+  },
+  "statusImportFailed": {
+    "message": "فشل الاستيراد"
+  },
+  "statusNoFile": {
+    "message": "يرجى اختيار ملف"
+  },
+  "confirmImportReplace": {
+    "message": "سيؤدي هذا إلى استبدال كل البيانات الموجودة. متابعة؟"
+  },
+  "privacyPermissionsTitle": {
+    "message": "الصلاحيات المستخدمة"
+  },
+  "permContextMenu": {
+    "message": "يضيف قائمة النقر بالزر الأيمن."
+  },
+  "permStorage": {
+    "message": "يخزّن الإعدادات و(اختيارياً) السجل."
+  },
+  "permActiveTab": {
+    "message": "يصل إلى تحديد التبويب الحالي عند استدعائك للمساعد."
+  },
+  "permScripting": {
+    "message": "يحقن سكربت المحتوى في الصفحات التي لم يُحمَّل فيها بعد."
+  },
+  "permClipboard": {
+    "message": "ينسخ الردود ومربعات التعليمات البرمجية إلى الحافظة."
+  },
+  "permNotifications": {
+    "message": "يعرض إشعارات حالة اختيارية."
+  },
+  "permHost": {
+    "message": "مطلوب للتحدث إلى Duck.ai."
+  },
+  "shortcutsIntro": {
+    "message": "يدير فايرفوكس اختصارات لوحة المفاتيح على مستوى المتصفح. لتخصيصها:"
+  },
+  "shortcutsStep1": {
+    "message": "افتح about:addons."
+  },
+  "shortcutsStep2": {
+    "message": "انقر أيقونة الترس، ثم \"إدارة اختصارات الامتدادات\"."
+  },
+  "shortcutsStep3": {
+    "message": "ابحث عن \"مساعد Duck.ai\" وحرر الاختصارات."
+  },
+  "shortcutAction": {
+    "message": "الإجراء"
+  },
+  "shortcutDefault": {
+    "message": "الافتراضي"
+  },
+  "shortcutOpenAssistant": {
+    "message": "افتح مساعد Duck.ai مع التحديد الحالي"
+  },
+  "shortcutOpenPopup": {
+    "message": "افتح الإعدادات"
+  },
+  "aboutLead": {
+    "message": "مساعد Duck.ai إضافة فايرفوكس تتيح لك استدعاء Duck.ai على أي نص محدد في صفحة ويب — شرح، ترجمة، تلخيص، إعادة كتابة، تحليل، بحث، تصحيح التعليمات البرمجية والمزيد."
+  },
+  "aboutFeaturesTitle": {
+    "message": "ماذا تفعل الإضافة"
+  },
+  "aboutFeature1": {
+    "message": "زر عائم: يظهر بجانب النص المحدد — اضغط عليه لفتح قائمة الإجراءات."
+  },
+  "aboutFeature2": {
+    "message": "قائمة السياق: اضغط بالزر الأيمن على أي تحديد للوصول لكل الإجراءات مرتبة حسب الفئة."
+  },
+  "aboutFeature3": {
+    "message": "نافذة منبثقة: اضغط أيقونة الشريط لتصفح الفئات وتشغيل الإجراءات."
+  },
+  "aboutFeature4": {
+    "message": "أكثر من 70 إجراء مدمج: أسئلة شائعة، تلخيص سريع، ترجمة (12 لغة)، قواعد، تفكير نقدي، تعليمات برمجية، تعلم، عمل، طبخ، بحث، SEO، أمان."
+  },
+  "aboutFeature5": {
+    "message": "برومبتات مخصصة: أضف برومبتاتك الخاصة في الإعدادات ← برومبتاتي."
+  },
+  "aboutFeature6": {
+    "message": "إجراءات الصفحة: أرسل أو لخّص صفحة كاملة بدون تحديد نص."
+  },
+  "aboutFeature7": {
+    "message": "اختصارات لوحة المفاتيح: Ctrl+Shift+D يفتح المساعد مع التحديد الحالي."
+  },
+  "aboutFeature8": {
+    "message": "دعم RTL: إجبار اتجاه نص من اليمين لليسار للعربية والفارسية والعبرية والأردية."
+  },
+  "aboutFeature9": {
+    "message": "ثيم داكن/فاتح: يطابق نظامك أو تفضيلك اليدوي."
+  },
+  "aboutDuckAiTitle": {
+    "message": "كيف يعمل تكامل Duck.ai"
+  },
+  "aboutDuckAi1": {
+    "message": "Duck.ai لا ينشر واجهة برمجة تطبيقات رسمية لامتدادات المتصفح. تستخدم هذه الإضافة الموقع العام مباشرة:"
+  },
+  "aboutDuckAi3": {
+    "message": "يبني برومبت من النص المحدد والإجراء المختار."
+  },
+  "aboutDuckAi5": {
+    "message": "يفتح https://duck.ai/ في تبويب (يعيد استخدام تبويب موجود إن وجد)."
+  },
+  "aboutDuckAi6": {
+    "message": "سكربت محتوى يملأ صندوق المحادثة بالبرومبت وينقر زر الإرسال اختيارياً."
+  },
+  "aboutDuckAi8": {
+    "message": "إذا فشل الحقن التلقائي، يُنسخ البرومبت إلى الحافظة لتلصقه يدوياً."
+  },
+  "aboutDisclaimerTitle": {
+    "message": "إخلاء مسؤولية"
+  },
+  "aboutDisclaimer1": {
+    "message": "غير تابع لـ DuckDuckGo. هذا امتداد مستقل مفتوح المصدر. \"Duck.ai\" و \"DuckDuckGo\" وشعارهما علامات تجارية مملوكة لـ DuckDuckGo, LLC — تُستخدم هنا فقط لوصف ما يتفاعل معه الامتداد."
+  },
+  "aboutDisclaimer2": {
+    "message": "كيف يعمل: يفتح الامتداد موقع Duck.ai العام ويملأ صندوق المحادثة بالبرومبت — تماماً كما لو كتبته بنفسك. لا يستدعي أي API خاص، لا يستخدم بيانات اعتماد، لا يتجاوز شروط Duck.ai. بمجرد الإرسال، تخضع مدخلاتك لشروط وخصوصية Duck.ai."
+  },
+  "aboutDisclaimer3": {
+    "message": "مسؤوليتك: الذكاء الاصطناعي قد يخطئ والإجابات قد تكون غير دقيقة — يرجى التحقق من الإجابة. لا ترسل معلومات حساسة أو سرية أو شخصية. المؤلفون غير مسؤولين عن أي أضرار تنشأ من استخدام هذا الامتداد."
+  },
+  "aboutLicenseTitle": {
+    "message": "الترخيص"
+  },
+  "aboutLicense1": {
+    "message": "مرخّص تحت رخصة MIT — حر للاستخدام والتعديل والتوزيع."
+  },
+  "statusSaved": {
+    "message": "تم الحفظ"
+  },
+  "statusHistoryCleared": {
+    "message": "تم مسح السجل"
+  },
+  "statusAllCleared": {
+    "message": "تم مسح كل البيانات"
+  },
+  "statusReset": {
+    "message": "تمت إعادة التعيين"
+  },
+  "optReset": {
+    "message": "إعادة التعيين للافتراضي"
+  },
+  "confirmClearHistory": {
+    "message": "مسح كل سجل المحادثات؟"
+  },
+  "confirmClearAll": {
+    "message": "إزالة كل بيانات الامتداد؟ لا يمكن التراجع."
+  },
+  "confirmReset": {
+    "message": "إعادة تعيين الإعدادات للإعدادات الافتراضية؟"
+  },
+  "errorDefaultTitle": {
+    "message": "حدث خطأ ما"
+  },
+  "errorDefaultMessage": {
+    "message": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى."
+  },
+  "errorNetworkTitle": {
+    "message": "خطأ في الشبكة"
+  },
+  "errorNetworkMessage": {
+    "message": "تعذّر الوصول إلى Duck.ai. تحقق من اتصالك بالإنترنت وحاول مجدداً."
+  },
+  "errorHttpTitle": {
+    "message": "خطأ في Duck.ai"
+  },
+  "errorHttpMessage": {
+    "message": "أعاد Duck.ai خطأ. حاول مرة أخرى بعد لحظات."
+  },
+  "errorNoTokenTitle": {
+    "message": "تعذّر بدء جلسة Duck.ai"
+  },
+  "errorNoTokenMessage": {
+    "message": "لم يوفر Duck.ai رمز جلسة. قد تكون الخدمة غير متاحة مؤقتاً."
+  },
+  "errorUnauthorizedTitle": {
+    "message": "انتهت الجلسة"
+  },
+  "errorUnauthorizedMessage": {
+    "message": "انتهت صلاحية جلسة Duck.ai. أعد المحاولة؛ ستُنشأ جلسة جديدة تلقائياً."
+  },
+  "errorRateLimitTitle": {
+    "message": "طلبات كثيرة جداً"
+  },
+  "errorRateLimitMessage": {
+    "message": "يحدّ Duck.ai من عدد الطلبات. انتظر بضع دقائق وحاول مجدداً."
+  },
+  "errorTimeoutTitle": {
+    "message": "انتهت مهلة الطلب"
+  },
+  "errorTimeoutMessage": {
+    "message": "استغرق Duck.ai وقتاً طويلاً للرد. حاول مجدداً أو زِد المهلة في الإعدادات."
+  },
+  "errorEmptyTitle": {
+    "message": "رد فارغ"
+  },
+  "errorEmptyMessage": {
+    "message": "أعاد Duck.ai رداً فارغاً. حاول إعادة الصياغة أو اختيار إجراء آخر."
+  },
+  "errorStreamTitle": {
+    "message": "خطأ في التدفق"
+  },
+  "errorStreamMessage": {
+    "message": "قُطِع تدفق الرد. يرجى المحاولة مرة أخرى."
+  },
+  "errorEmptySelectionTitle": {
+    "message": "لم يتم تحديد نص"
+  },
+  "errorEmptySelectionMessage": {
+    "message": "حدد بعض النص في الصفحة أولاً، ثم اختر إجراءً."
+  },
+  "errorNoHistoryTitle": {
+    "message": "لا شيء لإعادة توليده"
+  },
+  "errorNoHistoryMessage": {
+    "message": "لا يوجد رد سابق لإعادة توليده."
+  },
+  "errorStateTitle": {
+    "message": "خطأ في حالة المحادثة"
+  },
+  "errorStateMessage": {
+    "message": "حالة المحادثة غير متسقة. ابدأ محادثة جديدة وحاول مجدداً."
+  }
+}

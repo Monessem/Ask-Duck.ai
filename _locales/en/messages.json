@@ -1,0 +1,947 @@
+{
+  "extName": {
+    "message": "Ask Duck.ai"
+  },
+  "extShortName": {
+    "message": "Ask Duck.ai"
+  },
+  "extDescription": {
+    "message": "Use Duck.ai directly from Firefox to explain, translate, rewrite, analyze, research, debug code, and more."
+  },
+  "actionTitle": {
+    "message": "Ask Duck.ai"
+  },
+  "commandOpenAssistant": {
+    "message": "Open Duck.ai assistant with current selection"
+  },
+  "commandOpenPopup": {
+    "message": "Open Duck.ai assistant settings"
+  },
+  "contextMenuRoot": {
+    "message": "Ask Duck.ai"
+  },
+  "contextMenuSettings": {
+    "message": "Settings"
+  },
+  "contextMenuSupport": {
+    "message": "Support"
+  },
+  "contextMenuBmac": {
+    "message": "Buy Me a Coffee"
+  },
+  "contextMenuSendPage": {
+    "message": "Send this page to Duck.ai"
+  },
+  "contextMenuSummarizePage": {
+    "message": "Summarize this page"
+  },
+  "tabSupport": {
+    "message": "Support"
+  },
+  "actionSummaryGeneral": {
+    "message": "Summarize"
+  },
+  "categoryMyPrompts": {
+    "message": "My Prompts"
+  },
+  "tabMyPrompts": {
+    "message": "My Prompts"
+  },
+  "myPromptsIntro": {
+    "message": "Create your own custom prompts. These appear in the \"My Prompts\" category in the action menu and context menu. Use them for any task not covered by the built-in actions."
+  },
+  "myPromptsAddNew": {
+    "message": "Add New Prompt"
+  },
+  "myPromptsAddBtn": {
+    "message": "Add Prompt"
+  },
+  "myPromptsDelete": {
+    "message": "Delete"
+  },
+  "myPromptsSave": {
+    "message": "Save"
+  },
+  "myPromptsSaved": {
+    "message": "Prompt saved"
+  },
+  "myPromptsAdded": {
+    "message": "Prompt added"
+  },
+  "myPromptsDeleted": {
+    "message": "Prompt deleted"
+  },
+  "myPromptsError": {
+    "message": "Please enter both name and instruction"
+  },
+  "myPromptsEmpty": {
+    "message": "No custom prompts yet. Add one above."
+  },
+  "myPromptsEmptyMenu": {
+    "message": "No custom prompts yet. Add them in Settings → My Prompts."
+  },
+  "myPromptsEditLabel": {
+    "message": "Prompt name:"
+  },
+  "myPromptsConfirmDelete": {
+    "message": "Delete this prompt?"
+  },
+  "supportSubtitle": {
+    "message": "Support & Donate"
+  },
+  "supportTitle": {
+    "message": "Thank you for using Ask Duck.ai!"
+  },
+  "supportIntro": {
+    "message": "Ask Duck.ai is a free, open-source Firefox extension. If you find it useful, please consider supporting its development."
+  },
+  "supportBmacTitle": {
+    "message": "Buy Me a Coffee"
+  },
+  "supportBmacDesc": {
+    "message": "If this extension saves you time, consider buying me a coffee. Every contribution helps keep the project alive and improving."
+  },
+  "supportFeedbackTitle": {
+    "message": "Feedback & Issues"
+  },
+  "supportFeedbackDesc": {
+    "message": "Found a bug? Have a feature request? Your feedback helps make this extension better for everyone."
+  },
+  "supportRateTitle": {
+    "message": "Rate the Extension"
+  },
+  "supportRateDesc": {
+    "message": "Help others discover Ask Duck.ai by rating it on Firefox Add-ons."
+  },
+  "supportDocsTitle": {
+    "message": "Documentation"
+  },
+  "supportDocsDesc": {
+    "message": "Read the documentation to learn about all features and how to get the most out of the extension."
+  },
+  "supportFooter": {
+    "message": "Ask Duck.ai is not affiliated with, endorsed by, or sponsored by DuckDuckGo. \"Duck.ai\" is a trademark of its respective owner."
+  },
+  "categoryCommon": {
+    "message": "Common Questions"
+  },
+  "categorySummary": {
+    "message": "Quick Summary"
+  },
+  "categoryTranslate": {
+    "message": "Translate"
+  },
+  "categoryGrammar": {
+    "message": "Grammar Helper"
+  },
+  "categoryCritical": {
+    "message": "Critical Thinking"
+  },
+  "categoryCode": {
+    "message": "Code Helper"
+  },
+  "categoryLearning": {
+    "message": "Learning Helper"
+  },
+  "categoryWork": {
+    "message": "Work & Productivity"
+  },
+  "categoryChef": {
+    "message": "Chef Helper"
+  },
+  "categoryResearch": {
+    "message": "Research Helper"
+  },
+  "categorySeo": {
+    "message": "SEO & Marketing"
+  },
+  "categorySecurity": {
+    "message": "Security Analysis"
+  },
+  "actionSummaryOne": {
+    "message": "One-sentence summary"
+  },
+  "actionSummaryPoints": {
+    "message": "Key points"
+  },
+  "actionSummaryActions": {
+    "message": "Action items"
+  },
+  "actionSummaryMatrix": {
+    "message": "Decision matrix"
+  },
+  "actionLearningQuiz": {
+    "message": "Create a quiz"
+  },
+  "actionLearningFlashcards": {
+    "message": "Flashcards"
+  },
+  "actionLearningTeach": {
+    "message": "Teach back"
+  },
+  "actionLearningExercise": {
+    "message": "Practice exercise"
+  },
+  "actionLearningMnemonic": {
+    "message": "Memory mnemonic"
+  },
+  "actionWorkEmail": {
+    "message": "Email reply"
+  },
+  "actionWorkMeeting": {
+    "message": "Meeting notes"
+  },
+  "actionWorkPlan": {
+    "message": "Action plan"
+  },
+  "actionWorkStatus": {
+    "message": "Status update"
+  },
+  "actionWorkPitch": {
+    "message": "Pitch deck outline"
+  },
+  "actionSeoKeywords": {
+    "message": "SEO keywords"
+  },
+  "actionSeoMeta": {
+    "message": "Meta description"
+  },
+  "actionSeoSocial": {
+    "message": "Social media post"
+  },
+  "actionSeoAdcopy": {
+    "message": "Ad copy"
+  },
+  "actionSeoHashtags": {
+    "message": "Hashtag suggestions"
+  },
+  "actionSecurityPhishing": {
+    "message": "Phishing check"
+  },
+  "actionSecurityPrivacy": {
+    "message": "Privacy audit"
+  },
+  "actionSecurityPassword": {
+    "message": "Password strength"
+  },
+  "actionSecurityVuln": {
+    "message": "Vulnerability scan"
+  },
+  "pageSummarize": {
+    "message": "Summarize page"
+  },
+  "pageTldr": {
+    "message": "TL;DR page"
+  },
+  "actionThink": {
+    "message": "What do you think of this?"
+  },
+  "actionFactCheck": {
+    "message": "Fact check"
+  },
+  "actionEli5": {
+    "message": "Explain like I'm five"
+  },
+  "actionDebate": {
+    "message": "Debate"
+  },
+  "actionTldr": {
+    "message": "TL;DR"
+  },
+  "actionTranslate": {
+    "message": "Translate"
+  },
+  "actionTranslateLanguage": {
+    "message": "Target language"
+  },
+  "actionTranslateChoose": {
+    "message": "Choose language..."
+  },
+  "actionGrammarCorrect": {
+    "message": "Correct grammar"
+  },
+  "actionGrammarLonger": {
+    "message": "Make text longer"
+  },
+  "actionGrammarShorter": {
+    "message": "Make text shorter"
+  },
+  "actionGrammarProfessional": {
+    "message": "Make text more professional"
+  },
+  "actionGrammarLessProfessional": {
+    "message": "Make text less professional"
+  },
+  "actionGrammarClear": {
+    "message": "Rewrite clearly"
+  },
+  "actionGrammarStyle": {
+    "message": "Improve writing style"
+  },
+  "actionGrammarSpelling": {
+    "message": "Fix spelling"
+  },
+  "actionCriticalQuestion": {
+    "message": "Question me"
+  },
+  "actionCriticalIsTrue": {
+    "message": "Is this true?"
+  },
+  "actionCriticalAssumptions": {
+    "message": "Find assumptions"
+  },
+  "actionCriticalChallenge": {
+    "message": "Challenge this idea"
+  },
+  "actionCriticalPerspective": {
+    "message": "New perspective"
+  },
+  "actionCriticalCounterarguments": {
+    "message": "Give counterarguments"
+  },
+  "actionCriticalFallacies": {
+    "message": "Identify logical fallacies"
+  },
+  "actionCriticalMissing": {
+    "message": "What am I missing?"
+  },
+  "actionCodeDebug": {
+    "message": "Debug code"
+  },
+  "actionCodeImprove": {
+    "message": "Improve this code"
+  },
+  "actionCodeWrong": {
+    "message": "What's wrong in this code?"
+  },
+  "actionCodeWhat": {
+    "message": "What does this code do?"
+  },
+  "actionCodeDangerous": {
+    "message": "Is this code dangerous?"
+  },
+  "actionCodeClean": {
+    "message": "Clean code"
+  },
+  "actionCodeExplain": {
+    "message": "Explain this code"
+  },
+  "actionCodeOptimize": {
+    "message": "Optimize this code"
+  },
+  "actionCodeComments": {
+    "message": "Add comments"
+  },
+  "actionCodeConvert": {
+    "message": "Convert to another programming language"
+  },
+  "actionCodeConvertLang": {
+    "message": "Target language"
+  },
+  "actionChefRecipe": {
+    "message": "Recipe ideas"
+  },
+  "actionChefSubstitutes": {
+    "message": "Ingredients substitutes"
+  },
+  "actionChefStory": {
+    "message": "What's this dish's story?"
+  },
+  "actionChefNutrition": {
+    "message": "Nutrition info"
+  },
+  "actionChefSafety": {
+    "message": "Food safety"
+  },
+  "actionChefCooking": {
+    "message": "Cooking instructions"
+  },
+  "actionChefHealthier": {
+    "message": "Make it healthier"
+  },
+  "actionChefVegetarian": {
+    "message": "Vegetarian alternative"
+  },
+  "actionChefShopping": {
+    "message": "Shopping ingredients"
+  },
+  "actionResearchSources": {
+    "message": "Find sources"
+  },
+  "actionResearchAnalyze": {
+    "message": "Analyze data"
+  },
+  "actionResearchDeepDive": {
+    "message": "Deep dive"
+  },
+  "actionResearchNews": {
+    "message": "Latest news"
+  },
+  "actionResearchSummarize": {
+    "message": "Summarize research"
+  },
+  "actionResearchCompare": {
+    "message": "Compare sources"
+  },
+  "actionResearchOpposing": {
+    "message": "Find opposing views"
+  },
+  "actionResearchEvidence": {
+    "message": "Explain the evidence"
+  },
+  "actionResearchQuestions": {
+    "message": "Generate research questions"
+  },
+  "langArabic": {
+    "message": "Arabic"
+  },
+  "langEnglish": {
+    "message": "English"
+  },
+  "langFrench": {
+    "message": "French"
+  },
+  "langGerman": {
+    "message": "German"
+  },
+  "langSpanish": {
+    "message": "Spanish"
+  },
+  "langItalian": {
+    "message": "Italian"
+  },
+  "langPortuguese": {
+    "message": "Portuguese"
+  },
+  "langTurkish": {
+    "message": "Turkish"
+  },
+  "langChinese": {
+    "message": "Chinese"
+  },
+  "langJapanese": {
+    "message": "Japanese"
+  },
+  "langKorean": {
+    "message": "Korean"
+  },
+  "langRussian": {
+    "message": "Russian"
+  },
+  "tabDuckAi": {
+    "message": "Duck.ai"
+  },
+  "duckAiIntro": {
+    "message": "The extension opens Duck.ai in a new tab and automatically fills in the chat with your prompt. You pick the AI model inside Duck.ai itself — no model list to maintain here."
+  },
+  "optAutoSubmit": {
+    "message": "Auto-submit prompt"
+  },
+  "optAutoSubmitHint": {
+    "message": "Automatically click \"Send\" after filling the prompt in Duck.ai. Turn off to review the prompt before sending."
+  },
+  "popupSubtitle": {
+    "message": "Quick AI actions for any webpage"
+  },
+  "popupSelection": {
+    "message": "Selected text:"
+  },
+  "popupBack": {
+    "message": "Back"
+  },
+  "popupAskDefault": {
+    "message": "Ask with default action"
+  },
+  "popupHistory": {
+    "message": "Conversation history"
+  },
+  "popupShortcuts": {
+    "message": "Keyboard shortcuts"
+  },
+  "popupOpenDuckAi": {
+    "message": "Open Duck.ai"
+  },
+  "popupSupport": {
+    "message": "Support"
+  },
+  "popupBmac": {
+    "message": "Buy Me a Coffee"
+  },
+  "popupAbout": {
+    "message": "About"
+  },
+  "historyDisabled": {
+    "message": "History is disabled. Enable it in Settings."
+  },
+  "historyEmpty": {
+    "message": "No conversations yet."
+  },
+  "historyClear": {
+    "message": "Clear all history"
+  },
+  "optionsSubtitle": {
+    "message": "Settings"
+  },
+  "tabGeneral": {
+    "message": "General"
+  },
+  "tabPrivacy": {
+    "message": "Privacy"
+  },
+  "tabShortcuts": {
+    "message": "Shortcuts"
+  },
+  "tabAbout": {
+    "message": "About"
+  },
+  "tabPrompts": {
+    "message": "Custom Prompts"
+  },
+  "customPromptsIntro": {
+    "message": "Customize the instruction sent to Duck.ai for each action. Leave a field empty to use the default instruction. Use {{input}} as a placeholder for the action's input (e.g. target language)."
+  },
+  "customPromptsAllCategories": {
+    "message": "All categories"
+  },
+  "customPromptsResetAll": {
+    "message": "Reset all to defaults"
+  },
+  "customPromptsReset": {
+    "message": "Reset"
+  },
+  "customPromptsSave": {
+    "message": "Save"
+  },
+  "statusPromptSaved": {
+    "message": "Prompt saved"
+  },
+  "statusPromptReset": {
+    "message": "Prompt reset to default"
+  },
+  "statusPromptsReset": {
+    "message": "All prompts reset"
+  },
+  "confirmResetAllPrompts": {
+    "message": "Reset ALL custom prompts to defaults?"
+  },
+  "optAutoSubmitHintUpdated": {
+    "message": "Automatically click Send after filling the prompt in Duck.ai. Turn off to review the prompt before sending (recommended — reduces bot detection)."
+  },
+  "optResponseLanguage": {
+    "message": "Duck.ai response language"
+  },
+  "optResponseLanguageHint": {
+    "message": "Choose the language for Duck.ai's responses. \"Auto\" lets Duck.ai decide based on the prompt."
+  },
+  "respLangAuto": {
+    "message": "Auto-detect"
+  },
+  "optTextDirection": {
+    "message": "Text direction (RTL/LTR)"
+  },
+  "optTextDirectionHint": {
+    "message": "Control the text direction of Duck.ai's responses. \"Auto\" detects based on the response language (RTL for Arabic, Persian, Hebrew, Urdu). Code blocks stay LTR."
+  },
+  "textDirAuto": {
+    "message": "Auto (based on language)"
+  },
+  "textDirLtr": {
+    "message": "LTR (Left-to-Right)"
+  },
+  "textDirRtl": {
+    "message": "RTL (Right-to-Left)"
+  },
+  "optSmartDetection": {
+    "message": "Smart context detection"
+  },
+  "optSmartDetectionHint": {
+    "message": "When enabled, the floating menu auto-detects the content type and reorders categories — Code Helper for code, Chef Helper for recipes, Research for articles, Grammar for paragraphs. All categories remain accessible."
+  },
+  "optResetHint": {
+    "message": "Restore all settings to their default values. Custom prompts and user prompts are kept."
+  },
+  "optFloatingButton": {
+    "message": "Floating selection button"
+  },
+  "optFloatingButtonHint": {
+    "message": "Show a small Duck.ai button next to selected text."
+  },
+  "optContextMenu": {
+    "message": "Context menu"
+  },
+  "optContextMenuHint": {
+    "message": "Add \"Ask Duck.ai\" to the right-click menu."
+  },
+  "optDefaultAction": {
+    "message": "Default action"
+  },
+  "optDefaultActionHint": {
+    "message": "Used when invoking the assistant without picking an action."
+  },
+  "optDefaultLanguage": {
+    "message": "Default translate language"
+  },
+  "optDefaultLanguageHint": {
+    "message": "Used when invoking Translate from a shortcut."
+  },
+  "optTheme": {
+    "message": "Theme"
+  },
+  "optThemeHint": {
+    "message": "Choose how the assistant looks."
+  },
+  "themeSystem": {
+    "message": "System"
+  },
+  "themeLight": {
+    "message": "Light"
+  },
+  "themeDark": {
+    "message": "Dark"
+  },
+  "optDisplayMode": {
+    "message": "Response display"
+  },
+  "optDisplayModeHint": {
+    "message": "Show Duck.ai's response in a sidebar on the current page, or open Duck.ai in a full new tab."
+  },
+  "displaySidebar": {
+    "message": "Sidebar"
+  },
+  "displayTab": {
+    "message": "Full tab"
+  },
+  "optTestConnection": {
+    "message": "Connection"
+  },
+  "optTestConnectionHint": {
+    "message": "Test that Duck.ai is reachable from this browser."
+  },
+  "optTestBtn": {
+    "message": "Test connection"
+  },
+  "testOk": {
+    "message": "OK"
+  },
+  "testFail": {
+    "message": "Failed"
+  },
+  "optUnofficialNote": {
+    "message": "Note: Duck.ai does not publish an official API. This extension opens Duck.ai's public web interface and fills in the chat input — exactly as you would do manually. See the About tab for details."
+  },
+  "privacySummary": {
+    "message": "Your selected webpage text is sent only to Duck.ai. No telemetry, no analytics, no third parties. History stays on your device and is off by default."
+  },
+  "privacyDataTitle": {
+    "message": "What data is processed?"
+  },
+  "privacyData1": {
+    "message": "Selected text: The text you highlight on a webpage. Sent to Duck.ai only when you trigger an action — never automatically, never to any other server."
+  },
+  "privacyData2": {
+    "message": "Action choice: The action you pick (e.g. \"Summarize\"). Processed locally; becomes part of the prompt sent to Duck.ai."
+  },
+  "privacyData3": {
+    "message": "Settings & prompts: Stored locally via browser.storage.local. Never uploaded."
+  },
+  "privacyData4": {
+    "message": "History (optional): Off by default. When enabled, conversations are saved on your device only."
+  },
+  "privacyData5": {
+    "message": "No credentials: The extension uses no API keys, tokens, or accounts. It opens Duck.ai's public website like a normal visitor."
+  },
+  "privacyData6": {
+    "message": "Duck.ai's terms: Once your text reaches Duck.ai, it is governed by Duck.ai's Privacy & Terms. Review them to understand how DuckDuckGo handles your input."
+  },
+  "permTabs": {
+    "message": "opens and focuses the Duck.ai tab."
+  },
+  "permDownloads": {
+    "message": "saves backup files when exporting settings."
+  },
+  "optHistoryEnabled": {
+    "message": "Store conversation history locally"
+  },
+  "optHistoryEnabledHint": {
+    "message": "When enabled, conversations are saved on this device only. Nothing is uploaded."
+  },
+  "optHistoryMax": {
+    "message": "Maximum stored conversations"
+  },
+  "optHistoryMaxHint": {
+    "message": "Older conversations are removed automatically."
+  },
+  "optClearHistory": {
+    "message": "Clear conversation history"
+  },
+  "optClearHistoryHint": {
+    "message": "Permanently delete all stored conversations on this device."
+  },
+  "optClearHistoryBtn": {
+    "message": "Clear history"
+  },
+  "optClearAll": {
+    "message": "Clear all extension data"
+  },
+  "optClearAllHint": {
+    "message": "Remove settings, history, and all locally-stored data."
+  },
+  "optClearAllBtn": {
+    "message": "Clear all data"
+  },
+  "backupTitle": {
+    "message": "Backup & Restore"
+  },
+  "optExport": {
+    "message": "Export all data"
+  },
+  "optExportHint": {
+    "message": "Download a JSON backup of all settings, custom prompts, and user prompts."
+  },
+  "optExportBtn": {
+    "message": "Export"
+  },
+  "optImport": {
+    "message": "Import data"
+  },
+  "optImportHint": {
+    "message": "Restore from a JSON backup file. Choose whether to merge or replace existing data."
+  },
+  "optImportMerge": {
+    "message": "Import (Merge)"
+  },
+  "optImportReplace": {
+    "message": "Import (Replace)"
+  },
+  "statusExported": {
+    "message": "Export started"
+  },
+  "statusExportFailed": {
+    "message": "Export failed"
+  },
+  "statusImported": {
+    "message": "Imported successfully"
+  },
+  "statusImportFailed": {
+    "message": "Import failed"
+  },
+  "statusNoFile": {
+    "message": "Please choose a file"
+  },
+  "confirmImportReplace": {
+    "message": "This will REPLACE all existing data. Continue?"
+  },
+  "privacyPermissionsTitle": {
+    "message": "Permissions used"
+  },
+  "permContextMenu": {
+    "message": "adds the right-click menu."
+  },
+  "permStorage": {
+    "message": "stores settings and (optionally) history."
+  },
+  "permActiveTab": {
+    "message": "accesses the current tab's selection when you invoke the assistant."
+  },
+  "permScripting": {
+    "message": "injects the content script on pages where it hasn't loaded yet."
+  },
+  "permClipboard": {
+    "message": "copies responses and code blocks to the clipboard."
+  },
+  "permNotifications": {
+    "message": "shows optional status notifications."
+  },
+  "permHost": {
+    "message": "required to talk to Duck.ai."
+  },
+  "shortcutsIntro": {
+    "message": "Firefox manages keyboard shortcuts at the browser level. To customize them:"
+  },
+  "shortcutsStep1": {
+    "message": "Open about:addons."
+  },
+  "shortcutsStep2": {
+    "message": "Click the gear icon, then \"Manage Extension Shortcuts\"."
+  },
+  "shortcutsStep3": {
+    "message": "Find \"Ask Duck.ai\" and edit the shortcuts."
+  },
+  "shortcutAction": {
+    "message": "Action"
+  },
+  "shortcutDefault": {
+    "message": "Default"
+  },
+  "shortcutOpenAssistant": {
+    "message": "Open Duck.ai assistant with current selection"
+  },
+  "shortcutOpenPopup": {
+    "message": "Open settings"
+  },
+  "aboutLead": {
+    "message": "Ask Duck.ai is a Firefox extension that lets you invoke Duck.ai on any selected webpage text — explain, translate, summarize, rewrite, analyze, research, debug code, and more."
+  },
+  "aboutFeaturesTitle": {
+    "message": "What the extension does"
+  },
+  "aboutFeature1": {
+    "message": "Floating button: Appears next to selected text — click it to open the action menu."
+  },
+  "aboutFeature2": {
+    "message": "Context menu: Right-click any selection to access all actions organized by category."
+  },
+  "aboutFeature3": {
+    "message": "Toolbar popup: Click the toolbar icon to browse categories and run actions."
+  },
+  "aboutFeature4": {
+    "message": "70+ built-in actions: Common Questions, Quick Summary, Translate (12 languages), Grammar, Critical Thinking, Code, Learning, Work, Chef, Research, SEO, Security."
+  },
+  "aboutFeature5": {
+    "message": "Custom prompts: Add your own prompts in Settings → My Prompts."
+  },
+  "aboutFeature6": {
+    "message": "Page actions: Send or summarize an entire page without selecting text."
+  },
+  "aboutFeature7": {
+    "message": "Keyboard shortcuts: Ctrl+Shift+D opens the assistant with the current selection."
+  },
+  "aboutFeature8": {
+    "message": "RTL support: Force right-to-left text direction for Arabic, Persian, Hebrew, and Urdu responses."
+  },
+  "aboutFeature9": {
+    "message": "Dark/Light theme: Matches your system or manual preference."
+  },
+  "aboutDuckAiTitle": {
+    "message": "How the Duck.ai integration works"
+  },
+  "aboutDuckAi1": {
+    "message": "Duck.ai does not publish an official API for browser extensions. This extension uses the public website directly:"
+  },
+  "aboutDuckAi3": {
+    "message": "Builds a prompt from your selected text and chosen action."
+  },
+  "aboutDuckAi5": {
+    "message": "Opens https://duck.ai/ in a tab (reuses an existing one if open)."
+  },
+  "aboutDuckAi6": {
+    "message": "A content script fills the chat input with your prompt and optionally clicks Send."
+  },
+  "aboutDuckAi8": {
+    "message": "If automatic injection fails, the prompt is copied to the clipboard so you can paste it manually."
+  },
+  "aboutDisclaimerTitle": {
+    "message": "Disclaimer"
+  },
+  "aboutDisclaimer1": {
+    "message": "Not affiliated with DuckDuckGo. This is an independent, open-source extension. \"Duck.ai\" and \"DuckDuckGo\" and their logo are trademarks of DuckDuckGo, LLC — used here only to describe what the extension interoperates with."
+  },
+  "aboutDisclaimer2": {
+    "message": "How it works: The extension opens Duck.ai's public website and fills the chat input with your prompt — exactly as if you typed it yourself. It does not call any private API, use credentials, or bypass Duck.ai's terms. Once submitted, your input is governed by Duck.ai's Privacy & Terms."
+  },
+  "aboutDisclaimer3": {
+    "message": "Your responsibility: AI can make mistakes and answers may be inaccurate — please double-check the answer. Do not send sensitive, confidential, or personal information. The authors are not liable for any damages arising from the use of this extension."
+  },
+  "aboutLicenseTitle": {
+    "message": "License"
+  },
+  "aboutLicense1": {
+    "message": "Licensed under the MIT License — free to use, modify, and distribute."
+  },
+  "statusSaved": {
+    "message": "Saved"
+  },
+  "statusHistoryCleared": {
+    "message": "History cleared"
+  },
+  "statusAllCleared": {
+    "message": "All data cleared"
+  },
+  "statusReset": {
+    "message": "Reset complete"
+  },
+  "optReset": {
+    "message": "Reset to defaults"
+  },
+  "confirmClearHistory": {
+    "message": "Clear all conversation history?"
+  },
+  "confirmClearAll": {
+    "message": "Remove ALL extension data? This cannot be undone."
+  },
+  "confirmReset": {
+    "message": "Reset settings to defaults?"
+  },
+  "errorDefaultTitle": {
+    "message": "Something went wrong"
+  },
+  "errorDefaultMessage": {
+    "message": "An unexpected error occurred. Please try again."
+  },
+  "errorNetworkTitle": {
+    "message": "Network error"
+  },
+  "errorNetworkMessage": {
+    "message": "Could not reach Duck.ai. Check your internet connection and try again."
+  },
+  "errorHttpTitle": {
+    "message": "Duck.ai error"
+  },
+  "errorHttpMessage": {
+    "message": "Duck.ai returned an error. Please try again in a moment."
+  },
+  "errorNoTokenTitle": {
+    "message": "Could not start a Duck.ai session"
+  },
+  "errorNoTokenMessage": {
+    "message": "Duck.ai did not provide a session token. The service may be temporarily unavailable."
+  },
+  "errorUnauthorizedTitle": {
+    "message": "Session expired"
+  },
+  "errorUnauthorizedMessage": {
+    "message": "Your Duck.ai session expired. Please retry; a fresh session will be created automatically."
+  },
+  "errorRateLimitTitle": {
+    "message": "Too many requests"
+  },
+  "errorRateLimitMessage": {
+    "message": "Duck.ai is rate limiting requests. Please wait a few minutes and try again."
+  },
+  "errorTimeoutTitle": {
+    "message": "Request timed out"
+  },
+  "errorTimeoutMessage": {
+    "message": "Duck.ai took too long to respond. Try again, or increase the timeout in Settings."
+  },
+  "errorEmptyTitle": {
+    "message": "Empty response"
+  },
+  "errorEmptyMessage": {
+    "message": "Duck.ai returned an empty response. Try rephrasing or picking a different action."
+  },
+  "errorStreamTitle": {
+    "message": "Streaming error"
+  },
+  "errorStreamMessage": {
+    "message": "The response stream was interrupted. Please try again."
+  },
+  "errorEmptySelectionTitle": {
+    "message": "No text selected"
+  },
+  "errorEmptySelectionMessage": {
+    "message": "Select some text on the page first, then choose an action."
+  },
+  "errorNoHistoryTitle": {
+    "message": "Nothing to regenerate"
+  },
+  "errorNoHistoryMessage": {
+    "message": "There is no previous response to regenerate."
+  },
+  "errorStateTitle": {
+    "message": "Conversation state error"
+  },
+  "errorStateMessage": {
+    "message": "The conversation state is inconsistent. Start a new conversation and try again."
+  }
+}

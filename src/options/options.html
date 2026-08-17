@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Duck.ai — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="top-bar">
+      <div class="brand">
+        <img class="logo-img" src="../../icons/icon-48.png" alt="" aria-hidden="true" />
+        <div>
+          <h1>Ask Duck.ai</h1>
+          <p data-i18n="optionsSubtitle"></p>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button class="tab active" role="tab" data-tab="general" data-i18n="tabGeneral">General</button>
+        <button class="tab" role="tab" data-tab="duckai" data-i18n="tabDuckAi">Duck.ai</button>
+        <button class="tab" role="tab" data-tab="prompts" data-i18n="tabPrompts">Custom Prompts</button>
+        <button class="tab" role="tab" data-tab="myprompts" data-i18n="tabMyPrompts">My Prompts</button>
+        <button class="tab" role="tab" data-tab="privacy" data-i18n="tabPrivacy">Privacy</button>
+        <button class="tab" role="tab" data-tab="shortcuts" data-i18n="tabShortcuts">Shortcuts</button>
+        <button class="tab" role="tab" data-tab="support" data-i18n="tabSupport">Support</button>
+        <button class="tab" role="tab" data-tab="about" data-i18n="tabAbout">About</button>
+      </nav>
+    </header>
+
+    <main class="content">
+      <!-- GENERAL -->
+      <section class="tab-panel active" id="tab-general" role="tabpanel">
+        <h2 data-i18n="tabGeneral">General</h2>
+        <div class="setting-row">
+          <div>
+            <label for="floatingButton" data-i18n="optFloatingButton">Floating selection button</label>
+            <p class="hint" data-i18n="optFloatingButtonHint">Show a small Duck.ai button next to selected text.</p>
+          </div>
+          <input type="checkbox" id="floatingButton" />
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="contextMenu" data-i18n="optContextMenu">Context menu</label>
+            <p class="hint" data-i18n="optContextMenuHint">Add "Ask Duck.ai" to the right-click menu.</p>
+          </div>
+          <input type="checkbox" id="contextMenu" />
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="defaultAction" data-i18n="optDefaultAction">Default action</label>
+            <p class="hint" data-i18n="optDefaultActionHint">Used when invoking the assistant without picking an action.</p>
+          </div>
+          <select id="defaultAction"></select>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="defaultLanguage" data-i18n="optDefaultLanguage">Default translate language</label>
+            <p class="hint" data-i18n="optDefaultLanguageHint">Used when invoking Translate from a shortcut.</p>
+          </div>
+          <select id="defaultLanguage"></select>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optTheme">Theme</label>
+            <p class="hint" data-i18n="optThemeHint">Choose how the assistant looks.</p>
+          </div>
+          <div class="radio-group">
+            <label><input type="radio" name="theme" value="system" /> <span data-i18n="themeSystem">System</span></label>
+            <label><input type="radio" name="theme" value="light" /> <span data-i18n="themeLight">Light</span></label>
+            <label><input type="radio" name="theme" value="dark" /> <span data-i18n="themeDark">Dark</span></label>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="smartDetection" data-i18n="optSmartDetection">Smart context detection</label>
+            <p class="hint" data-i18n="optSmartDetectionHint">When enabled, the floating menu auto-detects the content type and reorders categories — Code Helper for code, Chef Helper for recipes, Research for articles, Grammar for paragraphs. All categories remain accessible.</p>
+          </div>
+          <input type="checkbox" id="smartDetection" />
+        </div>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optDisplayMode">Response display</label>
+            <p class="hint" data-i18n="optDisplayModeHint">Show Duck.ai's response in a sidebar on the current page, or open Duck.ai in a full new tab.</p>
+          </div>
+          <div class="radio-group">
+            <label><input type="radio" name="displayMode" value="sidebar" /> <span data-i18n="displaySidebar">Sidebar</span></label>
+            <label><input type="radio" name="displayMode" value="tab" /> <span data-i18n="displayTab">Full tab</span></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- DUCK.AI -->
+      <section class="tab-panel" id="tab-duckai" role="tabpanel" hidden>
+        <h2 data-i18n="tabDuckAi">Duck.ai</h2>
+
+        <div class="callout callout-info" data-i18n="duckAiIntro">
+          The extension opens Duck.ai in a new tab and automatically fills in the chat with your prompt. You pick the AI model inside Duck.ai itself — no model list to maintain here.
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <label for="autoSubmit" data-i18n="optAutoSubmit">Auto-submit prompt</label>
+            <p class="hint" data-i18n="optAutoSubmitHintUpdated">Automatically click "Send" after filling the prompt in Duck.ai. Turn off to review the prompt before sending (recommended — reduces bot detection).</p>
+          </div>
+          <input type="checkbox" id="autoSubmit" />
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="responseLanguage" data-i18n="optResponseLanguage">Duck.ai response language</label>
+            <p class="hint" data-i18n="optResponseLanguageHint">Choose the language for Duck.ai's responses. "Auto" lets Duck.ai decide based on the prompt.</p>
+          </div>
+          <select id="responseLanguage">
+            <option value="auto" data-i18n="respLangAuto">Auto-detect</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="pt">🇵🇹 Português</option>
+            <option value="tr">🇹🇷 Türkçe</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="ru">🇷🇺 Русский</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="textDirection" data-i18n="optTextDirection">Text direction (RTL/LTR)</label>
+            <p class="hint" data-i18n="optTextDirectionHint">Control the text direction of Duck.ai's responses. "Auto" detects based on the response language (RTL for Arabic, Persian, Hebrew, Urdu). Code blocks stay LTR.</p>
+          </div>
+          <select id="textDirection">
+            <option value="auto" data-i18n="textDirAuto">Auto (based on language)</option>
+            <option value="ltr" data-i18n="textDirLtr">LTR (Left-to-Right)</option>
+            <option value="rtl" data-i18n="textDirRtl">RTL (Right-to-Left)</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optTestConnection">Connection</label>
+            <p class="hint" data-i18n="optTestConnectionHint">Test that Duck.ai is reachable from this browser.</p>
+          </div>
+          <button class="btn btn-primary" id="testConnection" data-i18n="optTestBtn">Test connection</button>
+          <span id="testResult" class="value-pill"></span>
+        </div>
+
+        <div class="callout" data-i18n="optUnofficialNote">
+          Note: Duck.ai does not publish an official API. This extension opens Duck.ai's public web interface and fills in the chat input — exactly as you would do manually. See the About tab for details.
+        </div>
+      </section>
+
+      <!-- CUSTOM PROMPTS -->
+      <section class="tab-panel" id="tab-prompts" role="tabpanel" hidden>
+        <h2 data-i18n="tabPrompts">Custom Prompts</h2>
+        <div class="callout callout-info" data-i18n="customPromptsIntro">
+          Customize the instruction sent to Duck.ai for each action. Leave a field empty to use the default instruction. Use {{input}} as a placeholder for the action's input (e.g. target language).
+        </div>
+
+        <div class="prompts-toolbar">
+          <select id="prompt-category-filter" aria-label="Filter by category">
+            <option value="all" data-i18n="customPromptsAllCategories">All categories</option>
+          </select>
+          <button class="btn btn-secondary" id="reset-all-prompts" data-i18n="customPromptsResetAll">Reset all to defaults</button>
+        </div>
+
+        <div class="prompts-list" id="prompts-list">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- MY PROMPTS -->
+      <section class="tab-panel" id="tab-myprompts" role="tabpanel" hidden>
+        <h2 data-i18n="tabMyPrompts">My Prompts</h2>
+        <div class="callout callout-info" data-i18n="myPromptsIntro">
+          Create your own custom prompts. These appear in the "My Prompts" category in the action menu and context menu. Use them for any task not covered by the built-in actions.
+        </div>
+
+        <div class="prompt-card" style="margin-bottom: 16px;">
+          <div class="prompt-card-header">
+            <div class="prompt-card-title">
+              <span data-i18n="myPromptsAddNew">Add New Prompt</span>
+            </div>
+          </div>
+          <input type="text" id="new-prompt-label" placeholder="Prompt name (e.g. Make it funny)" style="width:100%;font:inherit;font-size:13px;padding:8px 10px;background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;margin-bottom:8px" />
+          <textarea id="new-prompt-instruction" placeholder="Instruction (e.g. Rewrite this in a humorous tone)" style="width:100%;font:inherit;font-size:12px;padding:8px 10px;background:var(--bg);color:var(--fg);border:1px solid var(--border);border-radius:6px;min-height:60px;resize:vertical;font-family:'SFMono-Regular',Menlo,Consolas,monospace"></textarea>
+          <div class="prompt-card-actions">
+            <button class="btn btn-primary" id="add-prompt-btn" data-i18n="myPromptsAddBtn">Add Prompt</button>
+          </div>
+        </div>
+
+        <div class="prompts-list" id="user-prompts-list">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- PRIVACY -->
+      <section class="tab-panel" id="tab-privacy" role="tabpanel" hidden>
+        <h2 data-i18n="tabPrivacy">Privacy</h2>
+        <div class="callout callout-info" data-i18n="privacySummary"></div>
+
+        <div class="setting-row">
+          <div>
+            <label for="historyEnabled" data-i18n="optHistoryEnabled">Store conversation history locally</label>
+            <p class="hint" data-i18n="optHistoryEnabledHint">When enabled, conversations are saved on this device only. Nothing is uploaded.</p>
+          </div>
+          <input type="checkbox" id="historyEnabled" />
+        </div>
+        <div class="setting-row">
+          <div>
+            <label for="historyMaxItems" data-i18n="optHistoryMax">Maximum stored conversations</label>
+            <p class="hint" data-i18n="optHistoryMaxHint">Older conversations are removed automatically.</p>
+          </div>
+          <input type="number" id="historyMaxItems" min="5" max="500" step="5" />
+        </div>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optClearHistory">Clear conversation history</label>
+            <p class="hint" data-i18n="optClearHistoryHint">Permanently delete all stored conversations on this device.</p>
+          </div>
+          <button class="btn btn-secondary" id="clearHistory" data-i18n="optClearHistoryBtn">Clear history</button>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optClearAll">Clear all extension data</label>
+            <p class="hint" data-i18n="optClearAllHint">Remove settings, history, and all locally-stored data.</p>
+          </div>
+          <button class="btn btn-danger" id="clearAll" data-i18n="optClearAllBtn">Clear all data</button>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optReset">Reset settings to defaults</label>
+            <p class="hint" data-i18n="optResetHint">Restore all settings to their default values. Custom prompts and user prompts are kept.</p>
+          </div>
+          <button class="btn btn-secondary" id="reset" data-i18n="optReset">Reset to defaults</button>
+        </div>
+
+        <!-- Export / Import -->
+        <h3 data-i18n="backupTitle">Backup & Restore</h3>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optExport">Export all data</label>
+            <p class="hint" data-i18n="optExportHint">Download a JSON backup of all settings, custom prompts, and user prompts.</p>
+          </div>
+          <button class="btn btn-secondary" id="export-data" data-i18n="optExportBtn">Export</button>
+        </div>
+        <div class="setting-row">
+          <div>
+            <label data-i18n="optImport">Import data</label>
+            <p class="hint" data-i18n="optImportHint">Restore from a JSON backup file. Choose whether to merge or replace existing data.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <input type="file" id="import-file" accept=".json" style="font-size:12px" />
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-secondary" id="import-merge" data-i18n="optImportMerge">Import (Merge)</button>
+              <button class="btn btn-secondary" id="import-replace" data-i18n="optImportReplace">Import (Replace)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data processing -->
+        <h3 data-i18n="privacyDataTitle">What data is processed?</h3>
+        <div class="privacy-section">
+          <p data-i18n="privacyData1"><strong>Selected text:</strong> Sent to Duck.ai only when you trigger an action — never automatically, never to any other server.</p>
+          <p data-i18n="privacyData2"><strong>Action choice:</strong> Processed locally; becomes part of the prompt sent to Duck.ai.</p>
+          <p data-i18n="privacyData3"><strong>Duck.ai's terms:</strong> Once your text reaches Duck.ai, it is governed by <a href="https://duckduckgo.com/duckai/privacy-terms" target="_blank" rel="noopener noreferrer">Duck.ai's Privacy & Terms</a>. Review them to understand how DuckDuckGo handles your input.</p>
+        </div>
+
+        <!-- Permissions -->
+        <h3 data-i18n="privacyPermissionsTitle">Permissions used</h3>
+        <ul class="privacy-list">
+          <li><code>contextMenus</code> — <span data-i18n="permContextMenu">adds the right-click menu.</span></li>
+          <li><code>storage</code> — <span data-i18n="permStorage">stores settings and (optionally) history.</span></li>
+          <li><code>activeTab</code> — <span data-i18n="permActiveTab">accesses the current tab's selection when you invoke the assistant.</span></li>
+          <li><code>scripting</code> — <span data-i18n="permScripting">injects the content script on pages where it hasn't loaded yet.</span></li>
+          <li><code>clipboardWrite</code> — <span data-i18n="permClipboard">copies prompts to the clipboard as a fallback.</span></li>
+          <li><code>notifications</code> — <span data-i18n="permNotifications">shows optional status notifications.</span></li>
+          <li><code>tabs</code> — <span data-i18n="permTabs">opens and focuses the Duck.ai tab.</span></li>
+          <li><code>downloads</code> — <span data-i18n="permDownloads">saves backup files when exporting settings.</span></li>
+          <li><code>host: https://duck.ai/*</code> — <span data-i18n="permHost">required to open and interact with Duck.ai.</span></li>
+        </ul>
+      </section>
+
+      <!-- SHORTCUTS -->
+      <section class="tab-panel" id="tab-shortcuts" role="tabpanel" hidden>
+        <h2 data-i18n="tabShortcuts">Shortcuts</h2>
+        <div class="callout callout-info">
+          <span data-i18n="shortcutsIntro">Firefox manages keyboard shortcuts at the browser level. To customize them:</span>
+          <ol>
+            <li data-i18n="shortcutsStep1">Open <code>about:addons</code>.</li>
+            <li data-i18n="shortcutsStep2">Click the gear icon, then "Manage Extension Shortcuts".</li>
+            <li data-i18n="shortcutsStep3">Find "Ask Duck.ai" and edit the shortcuts.</li>
+          </ol>
+        </div>
+        <table class="shortcuts-table">
+          <thead>
+            <tr><th data-i18n="shortcutAction">Action</th><th data-i18n="shortcutDefault">Default</th></tr>
+          </thead>
+          <tbody>
+            <tr><td data-i18n="shortcutOpenAssistant">Open Duck.ai assistant with current selection</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> <span class="muted">(mac: ⌘+Shift+D)</span></td></tr>
+            <tr><td data-i18n="shortcutOpenPopup">Open settings</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> <span class="muted">(mac: ⌘+Shift+Y)</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SUPPORT -->
+      <section class="tab-panel" id="tab-support" role="tabpanel" hidden>
+        <h2 data-i18n="tabSupport">Support</h2>
+
+        <div class="bmac-card">
+          <div class="bmac-icon">☕</div>
+          <h3 data-i18n="supportBmacTitle">Buy Me a Coffee</h3>
+          <p data-i18n="supportBmacDesc"></p>
+          <a href="https://buymeacoffee.com/monessem" target="_blank" rel="noopener noreferrer" class="btn btn-bmac">
+            ☕ Buy Me a Coffee
+          </a>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <label data-i18n="supportFeedbackTitle">Feedback & Issues</label>
+            <p class="hint" data-i18n="supportFeedbackDesc">Found a bug? Have a feature request? Your feedback helps make this extension better for everyone.</p>
+          </div>
+          <a href="https://github.com/Monessem/Duck.ai-Assistant/issues" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            Report
+          </a>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <label data-i18n="supportRateTitle">Rate the Extension</label>
+            <p class="hint" data-i18n="supportRateDesc">Help others discover Ask Duck.ai by rating it on Firefox Add-ons.</p>
+          </div>
+          <a href="https://addons.mozilla.org/firefox/addon/duckai-assistant/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            ⭐ Rate
+          </a>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <label data-i18n="supportDocsTitle">Open Support Page</label>
+            <p class="hint" data-i18n="supportDocsDesc">Open the full support page with all options.</p>
+          </div>
+          <button class="btn btn-secondary" id="open-support-page">
+            💬 Open
+          </button>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section class="tab-panel" id="tab-about" role="tabpanel" hidden>
+        <h2 data-i18n="tabAbout">About</h2>
+
+        <p data-i18n="aboutLead"></p>
+
+        <h3 data-i18n="aboutFeaturesTitle">What the extension does</h3>
+        <ul class="privacy-list">
+          <li data-i18n="aboutFeature1"></li>
+          <li data-i18n="aboutFeature2"></li>
+          <li data-i18n="aboutFeature3"></li>
+          <li data-i18n="aboutFeature4"></li>
+          <li data-i18n="aboutFeature5"></li>
+          <li data-i18n="aboutFeature6"></li>
+          <li data-i18n="aboutFeature7"></li>
+          <li data-i18n="aboutFeature8"></li>
+          <li data-i18n="aboutFeature9"></li>
+        </ul>
+
+        <h3 data-i18n="aboutDuckAiTitle">How the Duck.ai integration works</h3>
+        <p data-i18n="aboutDuckAi1"></p>
+        <ol>
+          <li data-i18n="aboutDuckAi3">Builds a prompt from your selected text and chosen action.</li>
+          <li data-i18n="aboutDuckAi5">Opens <code>https://duck.ai/</code> in a tab (reuses an existing one if open).</li>
+          <li data-i18n="aboutDuckAi6">A content script fills the chat input with your prompt and optionally clicks Send.</li>
+        </ol>
+        <p data-i18n="aboutDuckAi8"></p>
+
+        <h3 data-i18n="aboutDisclaimerTitle">Disclaimer</h3>
+        <div class="callout callout-warning">
+          <p data-i18n="aboutDisclaimer1"></p>
+          <p data-i18n="aboutDisclaimer2"></p>
+          <p data-i18n="aboutDisclaimer3"></p>
+        </div>
+
+        <h3 data-i18n="aboutLicenseTitle">License</h3>
+        <div class="license-box">
+          <p data-i18n="aboutLicense1"></p>
+          <pre class="license-text">MIT License
+
+Copyright (c) 2026 Ask Duck.ai Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span id="status" class="status"></span>
+    </footer>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

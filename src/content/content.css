@@ -1,0 +1,8 @@
+/* Ask Duck.ai content script styles
+ * These styles only apply to elements we control inside our shadow
+ * DOM roots. They have no effect on the host page.
+ */
+
+/* The host elements themselves are styled inline in JS, but this
+ * file is kept so the manifest has a CSS resource and future global
+ * rules can live here. */
