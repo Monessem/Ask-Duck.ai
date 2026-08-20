@@ -1,0 +1,17 @@
+{
+  "name": "ask-duck-ai",
+  "version": "5.7.0",
+  "description": "Ask Duck.ai - AI-powered browser extension for Duck.ai",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'Extension is ready. No build needed for browser extension.'",
+    "test": "echo 'No tests configured'",
+    "pack": "zip -r Ask-Duck.ai.xpi . -x 'node_modules/*' '.git/*' '.github/*' 'docs/*'"
+  },
+  "keywords": ["duck.ai", "browser-extension", "ai"],
+  "author": "Ask Duck.ai Contributors",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
