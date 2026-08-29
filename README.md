@@ -149,6 +149,23 @@ duckai-assistant/
 ```
 
 ## Installation
+via mozilla 
+https://addons.mozilla.org/en-US/firefox/addon/askduckai/
+via MS edge 
+https://microsoftedge.microsoft.com/addons/detail/ask-duckai/ekdhaoklggdgkppggnpmaohegeglphgb 
+
+To install a locally stored extension on Chrome or Brave and Based browser , follow these steps:
+
+1. Download an extension is in a `.zip` file, extract it into a folder. Ensure you can see the `manifest.json` file inside that folder.
+2. Open your browser and navigate to:
+   chrome://extensions
+   (For Brave, you can also use `brave://extensions`).
+3. Enable **Developer mode** using the toggle in the upper-right corner.
+4. Click **Load unpacked**.
+5. Select the extracted folder containing the `manifest.json` file.
+6. The extension will now be installed and enabled.
+
+To update the extension, modify the files in the folder and click the **Reload** button on the extensions page.
 
 ### Temporary install (for testing)
 
