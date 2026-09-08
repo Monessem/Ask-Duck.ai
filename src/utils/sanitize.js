@@ -8,7 +8,7 @@
  *   1. Use a strict allowlist of tags and attributes.
  *   2. Drop any element or attribute not on the allowlist.
  *   3. Force all links to open in a new tab with rel="noopener".
- *   4. Block javascript: and data: URLs entirely.
+ *   4. Allow only http(s) and mailto URLs.
  *
  * This module does NOT depend on any third-party library.
  */
@@ -26,7 +26,30 @@ const ALLOWED_ATTRS = new Set([
   'aria-label', 'aria-describedby', 'class'
 ]);
 
-const BLOCKED_URL_SCHEMES = /^(javascript|data|vbscript|file|about):/i;
+const ALLOWED_LINK_SCHEMES = new Set(['http:', 'https:', 'mailto:']);
+const ALLOWED_EMBED_SCHEMES = new Set(['http:', 'https:']);
+
+/**
+ * Allowlist check for href/src values. Relative URLs resolve against a
+ * dummy https base, so they are accepted; everything that resolves to a
+ * scheme outside the allowlist (javascript:, data:, vbscript:, file:,
+ * about:, ...) is rejected.
+ *
+ * @param {string} value
+ * @param {Set<string>} [schemes]
+ * @returns {boolean}
+ */
+export function isSafeUrl(value, schemes = ALLOWED_LINK_SCHEMES) {
+  if (typeof value !== 'string') return false;
+  // Strip control characters and whitespace used to smuggle schemes.
+  const cleaned = value.replace(/[\u0000-\u0020\u007F-\u009F]/g, '');
+  if (!cleaned) return false;
+  try {
+    return schemes.has(new URL(cleaned, 'https://sanitize.invalid/').protocol);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Sanitize an HTML string produced by the Markdown renderer.
@@ -75,12 +98,15 @@ function cleanNode(node) {
       el.removeAttribute(attr.name);
       continue;
     }
-    if ((name === 'href' || name === 'src') && BLOCKED_URL_SCHEMES.test(attr.value.trim())) {
+    if (name === 'href' && !isSafeUrl(attr.value)) {
+      el.removeAttribute(attr.name);
+    }
+    if (name === 'src' && !isSafeUrl(attr.value, ALLOWED_EMBED_SCHEMES)) {
       el.removeAttribute(attr.name);
     }
   }
 
-  // Force safe link behavior.
+  // Force safe link behavior (set after attribute filtering).
   if (tag === 'a') {
     el.setAttribute('target', '_blank');
     el.setAttribute('rel', 'noopener noreferrer');

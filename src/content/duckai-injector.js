@@ -18,7 +18,14 @@
 (function () {
   'use strict';
 
+  // Set to true while developing to see the injector's console output.
+  const DEBUG = false;
+  function debugLog() {
+    if (DEBUG) console.log.apply(console, arguments);
+  }
+
   const PROMPTS_KEY = 'duckai.prompts';
+  const PROMPT_TTL_MS = 10 * 60 * 1000;
   const SETTINGS_KEY = 'duckai.settings';
   const POLL_MS = 150;
   const MAX_WAIT_MS = 30000;
@@ -31,24 +38,45 @@
   let processedId = null;
   let currentDirection = null;
 
-  console.log('[Ask Duck.ai] Injector v4.7 loaded on', location.href);
+  // The chat UI keeps mutating, so polling only runs for a bounded
+  // window after a prompt arrives instead of for the tab's lifetime.
+  let pollTimer = null;
+  let pollDeadline = 0;
 
-  // Start immediately.
+  function startPolling() {
+    pollDeadline = Date.now() + MAX_WAIT_MS;
+    if (pollTimer) return;
+    pollTimer = setInterval(() => {
+      if (Date.now() > pollDeadline || (!getPromptIdFromUrl() && !processing)) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+        return;
+      }
+      check();
+    }, 500);
+  }
+
   setTimeout(check, 100);
-  setInterval(check, 500);
+  startPolling();
   window.addEventListener('hashchange', () => {
     // Reset processedId so we can process a new prompt on the same tab.
     processedId = null;
     setTimeout(check, 100);
+    startPolling();
   });
 
-  // Apply text direction immediately and re-apply periodically.
   applyTextDirection();
-  setInterval(applyTextDirection, 1000);
 
-  // Re-apply on DOM changes (Duck.ai is a SPA).
+  // Re-apply on DOM changes (Duck.ai is a SPA). Coalesced into one call
+  // per animation frame so a busy chat stream stays cheap.
+  let dirScheduled = false;
   const dirObserver = new MutationObserver(() => {
-    applyTextDirection();
+    if (dirScheduled) return;
+    dirScheduled = true;
+    requestAnimationFrame(() => {
+      dirScheduled = false;
+      applyTextDirection();
+    });
   });
   if (document.documentElement) {
     dirObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['dir'] });
@@ -127,7 +155,7 @@
         }
       `;
 
-      console.log('[Ask Duck.ai] Applied text direction (Q&A only):', dir);
+      debugLog('[Ask Duck.ai] Applied text direction (Q&A only):', dir);
     } catch (e) {
       // Settings not ready yet — retry later.
     }
@@ -167,12 +195,12 @@
       return;
     }
 
-    console.log('[Ask Duck.ai] Got prompt:', promptId, 'autoSubmit:', payload.autoSubmit, 'len:', payload.prompt.length);
+
 
     if (isCaptchaPage()) {
       if (!captchaActive) {
         captchaActive = true;
-        console.log('[Ask Duck.ai] CAPTCHA detected, waiting');
+        debugLog('[Ask Duck.ai] CAPTCHA detected, waiting');
         showCaptchaBanner();
       }
       return;
@@ -189,7 +217,7 @@
     try {
       await inject(payload);
       await deletePrompt(promptId);
-      console.log('[Ask Duck.ai] Injection complete');
+      debugLog('[Ask Duck.ai] Injection complete');
       try { history.replaceState(null, '', location.pathname + location.search); } catch {}
     } catch (err) {
       console.warn('[Ask Duck.ai] Injection failed:', err.message);
@@ -205,7 +233,13 @@
     try {
       const result = await storage().get(PROMPTS_KEY);
       const map = (result[PROMPTS_KEY] && typeof result[PROMPTS_KEY] === 'object') ? result[PROMPTS_KEY] : {};
-      return map[id] || null;
+      const item = map[id];
+      if (!item || typeof item.prompt !== 'string') return null;
+      if (item.timestamp && Date.now() - item.timestamp > PROMPT_TTL_MS) {
+        await deletePrompt(id);
+        return null;
+      }
+      return item;
     } catch (e) {
       return null;
     }
@@ -232,7 +266,7 @@
     }, MAX_WAIT_MS);
     if (!ta) throw new Error('Textarea not found or disabled');
 
-    console.log('[Ask Duck.ai] Textarea found, setting value...');
+    debugLog('[Ask Duck.ai] Textarea found, setting value...');
     ta.focus();
     ta.click();
     setReactValue(ta, prompt);
@@ -251,7 +285,7 @@
       }, 5000);
       if (btn) {
         btn.click();
-        console.log('[Ask Duck.ai] Send clicked');
+        debugLog('[Ask Duck.ai] Send clicked');
       } else {
         ta.dispatchEvent(new KeyboardEvent('keydown', {
           key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
@@ -377,7 +411,12 @@
       'background:#92400e;color:#fff;padding:14px 16px;border-radius:10px;' +
       'font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
       'box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:600px;margin:0 auto;';
-    b.innerHTML = '<strong>Ask Duck.ai:</strong> Solve the verification challenge — your prompt will be sent automatically.';
+    const label = document.createElement('strong');
+    label.textContent = 'Ask Duck.ai:';
+    b.appendChild(label);
+    b.appendChild(document.createTextNode(
+      ' Solve the verification challenge — your prompt will be sent automatically.'
+    ));
     document.body.appendChild(b);
   }
 

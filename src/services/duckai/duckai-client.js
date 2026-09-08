@@ -12,6 +12,18 @@
 
 const DUCKAI_URL = 'https://duck.ai/';
 const PROMPTS_KEY = 'duckai.prompts'; // Map of id -> {prompt, autoSubmit, timestamp}
+const PROMPT_TTL_MS = 10 * 60 * 1000;
+const MAX_PENDING_PROMPTS = 20;
+const CLEANUP_ALARM = 'duckai.prompt-cleanup';
+
+// All prompt-map writes go through this queue: storage.local has no
+// atomic read-modify-write, so concurrent callers would drop entries.
+let writeQueue = Promise.resolve();
+function withPromptLock(fn) {
+  const run = () => fn();
+  writeQueue = writeQueue.then(run, run);
+  return writeQueue;
+}
 
 export class DuckAIError extends Error {
   constructor(message, opts = {}) {
@@ -30,7 +42,7 @@ function getStorage() {
  * The caller appends #p=<id> to the duck.ai URL.
  */
 export async function storePendingPrompt(prompt, autoSubmit = true) {
-  const id = Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+  const id = newPromptId();
   const item = {
     id,
     prompt: prompt || '',
@@ -38,14 +50,77 @@ export async function storePendingPrompt(prompt, autoSubmit = true) {
     timestamp: Date.now()
   };
 
-  const result = await getStorage().get(PROMPTS_KEY);
-  const map = (result[PROMPTS_KEY] && typeof result[PROMPTS_KEY] === 'object') ? result[PROMPTS_KEY] : {};
-  map[id] = item;
-  await getStorage().set({ [PROMPTS_KEY]: map });
+  await withPromptLock(async () => {
+    const map = pruneMap(await readMap());
+    map[id] = item;
+    await getStorage().set({ [PROMPTS_KEY]: map });
+  });
 
-  // Schedule cleanup after 10 minutes (in case tab never loads).
-  setTimeout(() => cleanupPrompt(id), 10 * 60 * 1000);
+  scheduleCleanup();
   return id;
+}
+
+function newPromptId() {
+  const bytes = new Uint8Array(8);
+  globalThis.crypto.getRandomValues(bytes);
+  const random = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  return Date.now().toString(36) + '-' + random;
+}
+
+async function readMap() {
+  const result = await getStorage().get(PROMPTS_KEY);
+  const value = result[PROMPTS_KEY];
+  return (value && typeof value === 'object' && !Array.isArray(value)) ? value : {};
+}
+
+/**
+ * Drop expired prompts, then cap the map size. Prompts may contain text
+ * copied from the user's pages, so they must not linger in storage.
+ */
+function pruneMap(map) {
+  const now = Date.now();
+  const entries = Object.entries(map)
+    .filter(([, item]) => item && typeof item === 'object' && now - (item.timestamp || 0) < PROMPT_TTL_MS)
+    .sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0))
+    .slice(0, MAX_PENDING_PROMPTS - 1);
+  return Object.fromEntries(entries);
+}
+
+/**
+ * MV3 background contexts can be terminated at any time, so cleanup is
+ * driven by an alarm rather than setTimeout.
+ */
+function scheduleCleanup() {
+  try {
+    if (!globalThis.browser || !browser.alarms) return;
+    browser.alarms.create(CLEANUP_ALARM, { delayInMinutes: 1, periodInMinutes: 5 });
+    if (!browser.alarms.onAlarm.hasListener(onCleanupAlarm)) {
+      browser.alarms.onAlarm.addListener(onCleanupAlarm);
+    }
+  } catch { /* alarms unavailable (e.g. content script) */ }
+}
+
+async function onCleanupAlarm(alarm) {
+  if (!alarm || alarm.name !== CLEANUP_ALARM) return;
+  await purgeExpiredPrompts();
+}
+
+/**
+ * Remove every prompt older than the TTL.
+ */
+export async function purgeExpiredPrompts() {
+  try {
+    await withPromptLock(async () => {
+      const map = await readMap();
+      const kept = pruneMap(map);
+      if (Object.keys(kept).length !== Object.keys(map).length) {
+        await getStorage().set({ [PROMPTS_KEY]: kept });
+      }
+      if (Object.keys(kept).length === 0 && globalThis.browser && browser.alarms) {
+        try { await browser.alarms.clear(CLEANUP_ALARM); } catch {}
+      }
+    });
+  } catch {}
 }
 
 /**
@@ -54,27 +129,15 @@ export async function storePendingPrompt(prompt, autoSubmit = true) {
  */
 export async function consumePrompt(id) {
   if (!id) return null;
-  const result = await getStorage().get(PROMPTS_KEY);
-  const map = (result[PROMPTS_KEY] && typeof result[PROMPTS_KEY] === 'object') ? result[PROMPTS_KEY] : {};
-  const item = map[id];
-  if (!item) return null;
-  delete map[id];
-  await getStorage().set({ [PROMPTS_KEY]: map });
-  return item;
-}
-
-/**
- * Remove a prompt from storage (cleanup).
- */
-async function cleanupPrompt(id) {
-  try {
-    const result = await getStorage().get(PROMPTS_KEY);
-    const map = (result[PROMPTS_KEY] && typeof result[PROMPTS_KEY] === 'object') ? result[PROMPTS_KEY] : {};
-    if (map[id]) {
-      delete map[id];
-      await getStorage().set({ [PROMPTS_KEY]: map });
-    }
-  } catch {}
+  return await withPromptLock(async () => {
+    const map = await readMap();
+    const item = map[id];
+    if (!item) return null;
+    delete map[id];
+    await getStorage().set({ [PROMPTS_KEY]: map });
+    if (Date.now() - (item.timestamp || 0) > PROMPT_TTL_MS) return null;
+    return item;
+  });
 }
 
 /**

@@ -9,13 +9,15 @@
  *   - User custom prompts (user- prefix)
  */
 
+import '../platform/polyfill.js';
 import { buildContextMenu, resolveMenuItem } from './context-menu.js';
-import { MSG } from './messaging.js';
+import { MSG, BACKGROUND_MESSAGE_TYPES } from './messaging.js';
 import { storePendingPrompt, buildDuckAiUrl, DuckAIError } from '../services/duckai/duckai-client.js';
 import { getSettings, onSettingsChanged } from '../services/settings.js';
 import { buildPrompt } from '../prompts/prompt-builder.js';
 import { getAction } from '../prompts/actions.js';
 import { recordAction } from '../services/recent-actions.js';
+import { debugLog } from '../utils/debug.js';
 
 const DUCKAI_URL = 'https://duck.ai/';
 
@@ -140,6 +142,11 @@ async function handleCommand(command) {
 
 // ====== Message handler ======
 function handleMessage(message, sender, sendResponse) {
+  // Only accept messages coming from this extension's own pages and
+  // content scripts, with a known message type.
+  if (!sender || sender.id !== browser.runtime.id) return false;
+  if (!message || !BACKGROUND_MESSAGE_TYPES.has(message.type)) return false;
+
   handleMessageAsync(message, sender)
     .then((result) => sendResponse({ ok: true, result }))
     .catch((err) => sendResponse({
@@ -150,8 +157,6 @@ function handleMessage(message, sender, sendResponse) {
 }
 
 async function handleMessageAsync(message, sender) {
-  if (!message || !message.type) return null;
-
   switch (message.type) {
     case MSG.RUN_ACTION: {
       const { actionId, selection, input } = message.payload || {};
@@ -231,13 +236,27 @@ async function sendPageToDuckAi(tab, actionId) {
   try {
     let pageMeta = { title: tab.title || '', url: tab.url || '', text: '' };
     try {
-      const resp = await browser.tabs.sendMessage(tab.id, { type: 'get-page-content' });
+      const resp = await browser.tabs.sendMessage(tab.id, { type: MSG.GET_PAGE_CONTENT });
       if (resp) {
         pageMeta.title = resp.title || pageMeta.title;
         pageMeta.url = resp.url || pageMeta.url;
         pageMeta.text = resp.text || '';
       }
     } catch { /* content script not loaded */ }
+
+    // Reading the page body is a privacy-sensitive step: never send it
+    // without an explicit confirmation from the user for this page.
+    if (pageMeta.text) {
+      let approved = false;
+      try {
+        const resp = await browser.tabs.sendMessage(tab.id, {
+          type: MSG.CONFIRM_PAGE_SEND,
+          payload: { chars: pageMeta.text.length }
+        });
+        approved = !!(resp && resp.approved);
+      } catch { approved = false; }
+      if (!approved) return;
+    }
 
     let prompt;
     if (actionId) {
@@ -274,7 +293,7 @@ async function deliverPrompt(prompt, settings) {
   // 1. Store the prompt — returns a unique ID.
   const promptId = await storePendingPrompt(prompt, settings.autoSubmit);
   const url = buildDuckAiUrl(promptId);
-  console.log('[Duck.ai] Prompt stored (' + prompt.length + ' chars, id=' + promptId + ')');
+  debugLog('[Duck.ai] Prompt stored (' + prompt.length + ' chars, id=' + promptId + ')');
 
   // 2. Try to reuse an existing duck.ai tab first.
   try {
@@ -286,7 +305,7 @@ async function deliverPrompt(prompt, settings) {
       try {
         await browser.windows.update(existingTab.windowId, { focused: true });
       } catch {}
-      console.log('[Duck.ai] Reused existing tab:', existingTab.id);
+      debugLog('[Duck.ai] Reused existing tab:', existingTab.id);
       return { ok: true, mode: 'tab-reused' };
     }
   } catch (e) {
@@ -306,8 +325,9 @@ async function findExistingDuckAiTab() {
   try {
     const tabs = await browser.tabs.query({ url: 'https://duck.ai/*' });
     if (tabs && tabs.length > 0) {
-      // Return the first duck.ai tab (prefer the most recently active).
-      return tabs[0];
+      // Prefer the most recently accessed tab; `lastAccessed` is not
+      // guaranteed to exist on every engine, so fall back to order.
+      return [...tabs].sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
     }
   } catch (e) {
     console.warn('[Duck.ai] findExistingDuckAiTab', e);
@@ -327,7 +347,8 @@ async function openDuckAiPopupWindow(url) {
     if (left < 0) left = 0;
     if (top < 0) top = 0;
   } catch {
-    left = Math.max(0, screen.availWidth - width - 20);
+    // `screen` is not available in a service worker — use fixed values.
+    left = 20;
     top = 40;
   }
   try {

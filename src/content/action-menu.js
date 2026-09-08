@@ -17,6 +17,7 @@ import { getUserPrompts } from '../services/user-prompts.js';
 import { resolveTheme } from '../utils/theme.js';
 import { t } from '../utils/i18n.js';
 import { MSG } from '../background/messaging.js';
+import { debugLog } from '../utils/debug.js';
 
 const MENU_HOST_ID = 'duckai-action-menu-host';
 
@@ -787,7 +788,7 @@ export async function openMenu(opts) {
     // Select the top suggested category.
     selectCategory(firstCat);
 
-    console.log('[Ask Duck.ai] Smart detection:', detection.type, '→ categories:', suggestedCats.join(', '), 'confidence:', detection.confidence);
+    debugLog('[Ask Duck.ai] Smart detection:', detection.type, '→ categories:', suggestedCats.join(', '), 'confidence:', detection.confidence);
   } else {
     selectCategory('common');
   }
