@@ -1,0 +1,31 @@
+# Builds the Firefox XPI and the Chromium ZIP when a release is created.
+
+name: Release packages
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+      - name: Upload packages to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.xpi
+            dist/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

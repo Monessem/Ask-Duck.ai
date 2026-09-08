@@ -12,11 +12,28 @@
   if (window.__askDuckAiInjected) return;
   window.__askDuckAiInjected = true;
 
-  console.log('[Ask Duck.ai] Content script loaded on', location.href);
+  // Set to true while developing to see this script's console output.
+  var DEBUG = false;
+  function debugLog() {
+    if (DEBUG) console.log.apply(console, arguments);
+  }
+
+  // Message types this content script accepts (keep in sync with
+  // CONTENT_MESSAGE_TYPES in src/background/messaging.js — this file is
+  // a classic script and cannot import modules).
+  var ALLOWED_MESSAGES = {
+    'get-selection': true,
+    'get-page-content': true,
+    'get-page-meta': true,
+    'confirm-page-send': true,
+    'prompt-input': true
+  };
 
   // ---- Message bridge ----
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (!message || !message.type) return false;
+    // Only this extension's own background/pages may query the page.
+    if (!sender || sender.id !== browser.runtime.id) return false;
+    if (!message || !ALLOWED_MESSAGES[message.type]) return false;
 
     if (message.type === 'get-selection') {
       sendResponse({ selection: getCurrentSelection() });
@@ -37,6 +54,16 @@
         title: document.title || '',
         url: location.href,
         description: (meta && meta.content) || (ogDesc && ogDesc.content) || ''
+      });
+      return false;
+    }
+    if (message.type === 'confirm-page-send') {
+      var chars = (message.payload && message.payload.chars) || 0;
+      sendResponse({
+        approved: window.confirm(
+          'Ask Duck.ai wants to send the text of this page (' + chars +
+          ' characters) to Duck.ai.\n\n' + location.href + '\n\nSend it?'
+        )
       });
       return false;
     }
@@ -126,7 +153,7 @@
 
     shadow.appendChild(floatingBtn);
     document.documentElement.appendChild(floatingHost);
-    console.log('[Ask Duck.ai] Floating button initialized');
+    debugLog('[Ask Duck.ai] Floating button initialized');
   }
 
   function showFloating(x, y) {

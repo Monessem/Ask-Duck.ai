@@ -3,7 +3,7 @@
   "name": "__MSG_extName__",
   "short_name": "__MSG_extShortName__",
   "description": "__MSG_extDescription__",
-  "version": "5.7.0",
+  "version": "5.9.0",
   "author": "Ask Duck.ai Contributors",
   "homepage_url": "https://github.com/Monessem/Duck.ai-Assistant",
   "default_locale": "en",
@@ -40,9 +40,9 @@
     "activeTab",
     "scripting",
     "clipboardWrite",
-    "notifications",
     "tabs",
-    "downloads"
+    "downloads",
+    "alarms"
   ],
   "host_permissions": [
     "https://duck.ai/*"
@@ -51,6 +51,7 @@
     {
       "matches": ["<all_urls>"],
       "js": [
+        "src/platform/polyfill.js",
         "src/content/content-script.js"
       ],
       "run_at": "document_idle",
@@ -59,7 +60,7 @@
     },
     {
       "matches": ["https://duck.ai/*"],
-      "js": ["src/content/duckai-injector.js"],
+      "js": ["src/platform/polyfill.js", "src/content/duckai-injector.js"],
       "run_at": "document_idle",
       "all_frames": false
     }
@@ -68,29 +69,18 @@
     {
       "resources": [
         "src/content/content-main.js",
-        "src/content/floating-button.js",
         "src/content/action-menu.js",
-        "src/content/sidebar.js",
-        "src/content/content.css",
         "src/background/messaging.js",
-        "src/services/duckai/duckai-client.js",
+        "src/prompts/actions.js",
         "src/services/settings.js",
         "src/services/storage.js",
-        "src/services/history.js",
-        "src/services/error-handler.js",
-        "src/services/custom-prompts.js",
-        "src/services/recent-actions.js",
         "src/services/user-prompts.js",
-        "src/services/import-export.js",
-        "src/support/support.html",
-        "src/support/support.js",
-        "src/prompts/prompt-builder.js",
-        "src/prompts/actions.js",
-        "src/utils/sanitize.js",
+        "src/services/validation.js",
+        "src/utils/debug.js",
         "src/utils/detect.js",
+        "src/utils/helpers.js",
         "src/utils/i18n.js",
         "src/utils/theme.js",
-        "src/utils/helpers.js",
         "icons/icon-48.png"
       ],
       "matches": ["<all_urls>"]

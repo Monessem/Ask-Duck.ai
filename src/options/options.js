@@ -2,7 +2,7 @@
  * Options page controller
  */
 
-import { getSettings, setSettings, resetSettings } from '../services/settings.js';
+import { getSettings, setSettings, resetSettings, DEFAULT_SETTINGS } from '../services/settings.js';
 import { testConnection } from '../services/duckai/duckai-client.js';
 import { ACTIONS, CATEGORIES, TRANSLATE_LANGUAGES } from '../prompts/actions.js';
 import { clearAll } from '../services/storage.js';
@@ -136,7 +136,16 @@ function wireEvents() {
   document.getElementById('textDirection').addEventListener('change', (e) => save({ textDirection: e.target.value }));
   document.getElementById('smartDetection').addEventListener('change', (e) => save({ smartDetection: e.target.checked }));
   document.getElementById('historyEnabled').addEventListener('change', (e) => save({ historyEnabled: e.target.checked }));
-  document.getElementById('historyMaxItems').addEventListener('change', (e) => save({ historyMaxItems: Math.max(5, parseInt(e.target.value, 10)) }));
+  document.getElementById('historyMaxItems').addEventListener('change', (e) => {
+    // sanitizeSettingsPatch clamps the value; drop non-numeric input here
+    // so a blank field does not write NaN.
+    const n = Number.parseInt(e.target.value, 10);
+    if (!Number.isFinite(n)) {
+      e.target.value = DEFAULT_SETTINGS.historyMaxItems;
+      return;
+    }
+    save({ historyMaxItems: n });
+  });
 
   document.getElementById('testConnection').addEventListener('click', async () => {
     const result = document.getElementById('testResult');
