@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Duck.ai — Welcome</title>
+  <link rel="stylesheet" href="onboarding.css" />
+</head>
+<body>
+  <div class="onboarding-shell">
+    <div class="hero">
+      <img class="hero-logo" src="../../icons/icon-128.png" alt="" aria-hidden="true" />
+      <h1>Ask Duck.ai</h1>
+      <p class="hero-subtitle">Quick AI actions for any webpage — explain, translate, summarize, debug code, and more.</p>
+    </div>
+
+    <!-- Step 1: Floating button setup -->
+    <section class="step" id="step-floating">
+      <div class="step-header">
+        <span class="step-number">1</span>
+        <h2>Enable the floating button</h2>
+      </div>
+      <p class="step-desc">
+        Select text on any webpage and a small Duck.ai button appears next to it.
+        Click it to open the action menu. This is the core feature of the extension.
+      </p>
+      <div class="step-action">
+        <button class="btn btn-primary" id="enable-floating-btn">
+          <span class="btn-icon">🦆</span>
+          Enable floating button
+        </button>
+        <span class="status-text" id="floating-status"></span>
+      </div>
+    </section>
+
+    <!-- Step 2: How to use -->
+    <section class="step">
+      <div class="step-header">
+        <span class="step-number">2</span>
+        <h2>How to use</h2>
+      </div>
+      <ul class="how-list">
+        <li><strong>Select text</strong> on any webpage → the floating button appears.</li>
+        <li><strong>Click the button</strong> → choose an action (translate, summarize, debug, etc.).</li>
+        <li><strong>Right-click</strong> on any page or selection → use the context menu.</li>
+        <li><strong>Toolbar popup</strong> → quick access to all actions and history.</li>
+        <li><strong>Keyboard shortcuts</strong> → Ctrl+Shift+D (assistant), Ctrl+Shift+Y (settings).</li>
+      </ul>
+    </section>
+
+    <!-- Step 3: Privacy -->
+    <section class="step">
+      <div class="step-header">
+        <span class="step-number">3</span>
+        <h2>Your privacy</h2>
+      </div>
+      <ul class="privacy-list">
+        <li>No accounts, no login, no tracking.</li>
+        <li>Your selected text is sent directly to Duck.ai — never to our servers.</li>
+        <li>Conversation history is stored locally and disabled by default.</li>
+        <li>Works with Duck.ai's public website — no API keys, no credentials.</li>
+      </ul>
+    </section>
+
+    <div class="footer-actions">
+      <button class="btn btn-secondary" id="skip-btn">Skip for now</button>
+      <button class="btn btn-primary" id="go-settings-btn">Open Settings</button>
+    </div>
+  </div>
+
+  <script type="module" src="onboarding.js"></script>
+</body>
+</html>

@@ -22,6 +22,27 @@
     </div>
   </header>
 
+  <!-- One-time update notification banner -->
+  <div class="update-banner" id="update-banner" hidden>
+    <span class="update-icon" aria-hidden="true">✨</span>
+    <div class="update-content">
+      <span class="update-title" id="update-title"></span>
+      <span class="update-body" id="update-body"></span>
+    </div>
+    <button class="update-close" id="update-close" aria-label="Dismiss update notice">×</button>
+  </div>
+
+  <!-- Floating button permission banner (Chromium only) -->
+  <div class="update-banner permission-banner" id="floating-permission-banner" hidden>
+    <span class="update-icon" aria-hidden="true">🦆</span>
+    <div class="update-content">
+      <span class="update-title" id="floating-perm-title">Enable floating button</span>
+      <span class="update-body" id="floating-perm-body">Grant access to show the Ask Duck.ai button on any webpage.</span>
+      <button class="btn btn-primary btn-sm" id="floating-enable-btn" style="margin-top:6px">Enable</button>
+    </div>
+    <button class="update-close" id="floating-perm-close" aria-label="Dismiss">×</button>
+  </div>
+
   <main class="popup-body">
     <div class="selection-banner" id="selection-banner" hidden>
       <span class="selection-label" data-i18n="popupSelection">Selected text:</span>

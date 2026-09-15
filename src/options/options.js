@@ -2,7 +2,7 @@
  * Options page controller
  */
 
-import { getSettings, setSettings, resetSettings, DEFAULT_SETTINGS } from '../services/settings.js';
+import { getSettings, setSettings, resetSettings } from '../services/settings.js';
 import { testConnection } from '../services/duckai/duckai-client.js';
 import { ACTIONS, CATEGORIES, TRANSLATE_LANGUAGES } from '../prompts/actions.js';
 import { clearAll } from '../services/storage.js';
@@ -12,8 +12,32 @@ import { getUserPrompts, addUserPrompt, updateUserPrompt, deleteUserPrompt } fro
 import { exportToFile, importFromFile } from '../services/import-export.js';
 import { applyTheme } from '../utils/theme.js';
 import { applyDocumentDirection, t } from '../utils/i18n.js';
+import { requestAllUrlsPermission, isAllUrlsGranted, isChromiumRuntime } from '../services/floating-button-controller.js';
+import { MSG } from '../background/messaging.js';
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Module-level status element reference (set in init).
+let statusEl = null;
+
+/**
+ * Show a status message to the user. Module-level so all functions
+ * (including wireEvents, wireMyPrompts, renderUserPrompts, etc.)
+ * can call it.
+ *
+ * @param {string} msg - Message to display
+ * @param {'success'|'error'|''} [kind] - Status kind for styling
+ */
+function showStatus(msg, kind) {
+  if (!statusEl) return;
+  statusEl.textContent = msg;
+  statusEl.className = 'status ' + (kind || '');
+  setTimeout(() => {
+    if (!statusEl) return;
+    statusEl.textContent = '';
+    statusEl.className = 'status';
+  }, 3000);
+}
 
 async function init() {
   applyDocumentDirection();
@@ -63,7 +87,7 @@ async function loadSettings() {
 
 function populateDefaultActionSelect() {
   const sel = document.getElementById('defaultAction');
-  sel.innerHTML = '';
+  sel.textContent = '';
   for (const cat of CATEGORIES) {
     const optgroup = document.createElement('optgroup');
     optgroup.label = `${cat.icon} ${t(cat.labelKey) || cat.defaultLabel}`;
@@ -86,7 +110,7 @@ function populateDefaultActionSelect() {
 
 function populateDefaultLanguageSelect() {
   const sel = document.getElementById('defaultLanguage');
-  sel.innerHTML = '';
+  sel.textContent = '';
   for (const lang of TRANSLATE_LANGUAGES) {
     const opt = document.createElement('option');
     opt.value = lang.code;
@@ -110,19 +134,46 @@ function wireTabs() {
 }
 
 function wireEvents() {
-  const status = document.getElementById('status');
-  const showStatus = (msg, kind) => {
-    status.textContent = msg;
-    status.className = 'status ' + (kind || '');
-    setTimeout(() => { status.textContent = ''; status.className = 'status'; }, 3000);
-  };
+  // Initialize the module-level status element reference.
+  statusEl = document.getElementById('status');
 
   const save = async (patch) => {
     await setSettings(patch);
     showStatus(t('statusSaved') || 'Saved', 'success');
   };
 
-  document.getElementById('floatingButton').addEventListener('change', (e) => save({ floatingButton: e.target.checked }));
+  document.getElementById('floatingButton').addEventListener('change', async (e) => {
+    const enabled = e.target.checked;
+    if (enabled) {
+      // On Chromium, we need to request <all_urls> permission before
+      // the content script can be registered. On Firefox, the script
+      // is already in the manifest, so this is a no-op.
+      if (isChromiumRuntime()) {
+        const granted = await isAllUrlsGranted();
+        if (!granted) {
+          // Request permission (this is a user-gesture context).
+          const result = await requestAllUrlsPermission();
+          if (!result) {
+            // User denied — revert the toggle.
+            e.target.checked = false;
+            showStatus(t('statusPermissionDenied') || 'Permission denied — floating button cannot work without site access', 'error');
+            return;
+          }
+          // Permission granted — tell background to register the script.
+          try {
+            await browser.runtime.sendMessage({ type: MSG.FLOATING_BUTTON_REGISTER });
+          } catch { /* ignore */ }
+        }
+      }
+      await save({ floatingButton: true });
+    } else {
+      // Disabling — tell background to unregister the script.
+      try {
+        await browser.runtime.sendMessage({ type: MSG.FLOATING_BUTTON_UNREGISTER });
+      } catch { /* ignore */ }
+      await save({ floatingButton: false });
+    }
+  });
   document.getElementById('contextMenu').addEventListener('change', (e) => save({ contextMenu: e.target.checked }));
   document.getElementById('defaultAction').addEventListener('change', (e) => save({ defaultActionId: e.target.value }));
   document.getElementById('defaultLanguage').addEventListener('change', (e) => save({ defaultLanguage: e.target.value }));
@@ -136,27 +187,30 @@ function wireEvents() {
   document.getElementById('textDirection').addEventListener('change', (e) => save({ textDirection: e.target.value }));
   document.getElementById('smartDetection').addEventListener('change', (e) => save({ smartDetection: e.target.checked }));
   document.getElementById('historyEnabled').addEventListener('change', (e) => save({ historyEnabled: e.target.checked }));
-  document.getElementById('historyMaxItems').addEventListener('change', (e) => {
-    // sanitizeSettingsPatch clamps the value; drop non-numeric input here
-    // so a blank field does not write NaN.
-    const n = Number.parseInt(e.target.value, 10);
-    if (!Number.isFinite(n)) {
-      e.target.value = DEFAULT_SETTINGS.historyMaxItems;
-      return;
-    }
-    save({ historyMaxItems: n });
-  });
+  document.getElementById('historyMaxItems').addEventListener('change', (e) => save({ historyMaxItems: Math.max(5, parseInt(e.target.value, 10)) }));
 
   document.getElementById('testConnection').addEventListener('click', async () => {
     const result = document.getElementById('testResult');
     const btn = document.getElementById('testConnection');
-    result.textContent = '...';
+    result.textContent = 'Testing...';
     result.style.color = '';
     btn.disabled = true;
     try {
-      const r = await testConnection();
-      result.textContent = r.ok ? (t('testOk') || 'OK') : (t('testFail') || 'Failed');
-      result.style.color = r.ok ? 'var(--accent)' : 'var(--danger)';
+      // Send test request through background (avoids CORS issues).
+      const resp = await browser.runtime.sendMessage({ type: 'test-connection' });
+      if (resp && resp.ok && resp.result) {
+        const r = resp.result;
+        result.textContent = r.ok
+          ? (t('testOk') || 'OK') + (r.elapsed ? ' (' + r.elapsed + 'ms)' : '')
+          : (t('testFail') || 'Failed') + (r.message ? ': ' + r.message : '');
+        result.style.color = r.ok ? 'var(--accent)' : 'var(--danger)';
+      } else if (resp && resp.error) {
+        result.textContent = (t('testFail') || 'Failed') + ': ' + (resp.error.message || 'Error');
+        result.style.color = 'var(--danger)';
+      } else {
+        result.textContent = t('testFail') || 'Failed';
+        result.style.color = 'var(--danger)';
+      }
     } catch (err) {
       result.textContent = t('testFail') || 'Failed';
       result.style.color = 'var(--danger)';
@@ -327,24 +381,6 @@ async function renderCustomPrompts() {
   }
 }
 
-function escapeHtml(s) {
-  if (!s) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
-function escapeAttr(s) {
-  if (!s) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
-
 // ---- My Prompts (user custom prompts) ----
 
 function wireMyPrompts() {
@@ -359,11 +395,20 @@ function wireMyPrompts() {
         showStatus(t('myPromptsError') || 'Please enter both name and instruction', 'error');
         return;
       }
-      await addUserPrompt(label, instruction);
-      labelEl.value = '';
-      instrEl.value = '';
-      showStatus(t('myPromptsAdded') || 'Prompt added', 'success');
-      await renderUserPrompts();
+      try {
+        await addUserPrompt(label, instruction);
+        labelEl.value = '';
+        instrEl.value = '';
+        showStatus(t('myPromptsAdded') || 'Prompt added', 'success');
+        // Yield to the event loop to ensure storage write is fully settled
+        // before re-reading. This fixes a race condition on Chromium where
+        // getUserPrompts() would return stale data immediately after set().
+        await new Promise((r) => setTimeout(r, 50));
+        await renderUserPrompts();
+      } catch (err) {
+        console.error('[Ask Duck.ai] Failed to add prompt:', err);
+        showStatus(t('myPromptsError') || 'Failed to add prompt', 'error');
+      }
     });
   }
 }

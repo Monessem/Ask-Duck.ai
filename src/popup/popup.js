@@ -1,18 +1,22 @@
 /**
- * Popup controller (v4.15 — AMO compliant, no innerHTML with dynamic values)
+ * Popup controller (v4.16 — AMO compliant, no innerHTML with dynamic values)
  * - Quick Actions toolbar (recent actions)
  * - Page-level action (summarize page)
  * - Searchable history
+ * - One-time update notification banner
  */
 
 import { CATEGORIES, getActionsByCategory, TRANSLATE_LANGUAGES, getAction, ACTIONS } from '../prompts/actions.js';
 import { getSettings } from '../services/settings.js';
 import { getUserPrompts } from '../services/user-prompts.js';
 import { applyTheme } from '../utils/theme.js';
-import { applyDocumentDirection, t } from '../utils/i18n.js';
+import { applyDocumentDirection, t, getUILanguage } from '../utils/i18n.js';
 import { truncate } from '../utils/helpers.js';
 import { MSG } from '../background/messaging.js';
 import { getAllConversations, clearAllConversations } from '../services/history.js';
+import { getReleaseNotes } from '../utils/release-notes.js';
+import { getSelectionFromTab, getPageMetaFromTab } from '../services/tab-script.js';
+import { requestAllUrlsPermission, registerFloatingButtonScript } from '../services/floating-button-controller.js';
 
 document.addEventListener('DOMContentLoaded', init);
 
@@ -21,6 +25,8 @@ async function init() {
   localizePage();
   await applyTheme(document.documentElement);
   renderVersion();
+  await maybeShowUpdateBanner();
+  await checkFloatingButtonPermission();
   await renderSelectionBanner();
   await renderQuickActions();
   renderCategories();
@@ -38,6 +44,133 @@ function renderVersion() {
   document.getElementById('version').textContent = `v${browser.runtime.getManifest().version}`;
 }
 
+/**
+ * Show a one-time banner if the extension has just been updated to a
+ * newer version. The banner is shown only once per version — the
+ * version is recorded in storage.local as `lastSeenRelease` as soon
+ * as the banner is displayed, so it will not appear again until the
+ * next version bump.
+ */
+async function maybeShowUpdateBanner() {
+  const banner = document.getElementById('update-banner');
+  if (!banner) return;
+
+  const currentVersion = browser.runtime.getManifest().version;
+
+  // Read the last version the user saw.
+  let lastSeen = null;
+  try {
+    const result = await browser.storage.local.get('lastSeenRelease');
+    lastSeen = result && result.lastSeenRelease;
+  } catch { /* ignore */ }
+
+  // Same version as before — don't show the banner.
+  if (lastSeen === currentVersion) return;
+
+  // Try to find release notes for the current version.
+  const locale = getUILanguage();
+  const notes = getReleaseNotes(currentVersion, locale);
+
+  // Record this version as seen immediately, whether or not we have notes,
+  // so the banner never appears twice for the same version.
+  await markReleaseSeen(currentVersion);
+
+  if (!notes) return;
+
+  // Display the banner with the localized release notes.
+  document.getElementById('update-title').textContent = notes.title;
+  document.getElementById('update-body').textContent = notes.body;
+  banner.hidden = false;
+
+  // Wire the dismiss button.
+  const closeBtn = document.getElementById('update-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => { banner.hidden = true; });
+  }
+
+  // Auto-dismiss after 12 seconds.
+  setTimeout(() => { banner.hidden = true; }, 12000);
+}
+
+async function markReleaseSeen(version) {
+  try {
+    await browser.storage.local.set({ lastSeenRelease: version });
+  } catch { /* ignore */ }
+}
+
+/**
+ * Check if the floating button needs a permission prompt.
+ * On Chromium, the floating button content script is NOT declared in
+ * the manifest — it needs to be registered dynamically, which requires
+ * the <all_urls> permission. If the setting is enabled but the permission
+ * is not granted, show a banner prompting the user to grant it.
+ *
+ * On Firefox, the content script is in the manifest, so this is a no-op.
+ *
+ * If permission is already granted but the script is not registered
+ * (e.g., user granted via onboarding but script wasn't registered), we
+ * auto-register it here without showing the banner.
+ */
+async function checkFloatingButtonPermission() {
+  const banner = document.getElementById('floating-permission-banner');
+  if (!banner) return;
+
+  let status;
+  try {
+    status = await browser.runtime.sendMessage({ type: MSG.FLOATING_BUTTON_STATUS });
+  } catch { return; }
+
+  if (!status || !status.ok) return;
+  const s = status.result;
+  if (!s) return;
+
+  // Only relevant on Chromium.
+  if (!s.isChromium) return;
+  if (!s.enabled) return; // user disabled floating button — don't prompt
+
+  // Case 1: permission granted but script not registered → auto-register.
+  if (s.permissionGranted && !s.scriptRegistered) {
+    await registerFloatingButtonScript();
+    return; // don't show banner
+  }
+
+  // Case 2: everything is fine → hide banner.
+  if (s.permissionGranted && s.scriptRegistered) return;
+
+  // Case 3: permission NOT granted → show banner.
+  banner.hidden = false;
+
+  const enableBtn = document.getElementById('floating-enable-btn');
+  if (enableBtn) {
+    enableBtn.addEventListener('click', async () => {
+      enableBtn.disabled = true;
+      enableBtn.textContent = '...';
+      // Request <all_urls> permission (must be in user-gesture context).
+      const granted = await requestAllUrlsPermission();
+      if (granted) {
+        // Register the floating button content script.
+        // This sends a message to the background which has the scripting API.
+        const result = await registerFloatingButtonScript();
+        if (result && result.success) {
+          banner.hidden = true;
+        } else {
+          console.error('[Ask Duck.ai] Registration failed:', result);
+          enableBtn.disabled = false;
+          enableBtn.textContent = 'Enable';
+        }
+      } else {
+        enableBtn.disabled = false;
+        enableBtn.textContent = 'Enable';
+      }
+    });
+  }
+
+  const closeBtn = document.getElementById('floating-perm-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => { banner.hidden = true; });
+  }
+}
+
 async function renderSelectionBanner() {
   const banner = document.getElementById('selection-banner');
   const preview = document.getElementById('selection-preview');
@@ -46,11 +179,7 @@ async function renderSelectionBanner() {
     if (!tabs || !tabs.length) return;
     const tab = tabs[0];
     if (!tab.url || !tab.url.startsWith('http')) return;
-    let selection = '';
-    try {
-      const resp = await browser.tabs.sendMessage(tab.id, { type: MSG.GET_SELECTION });
-      selection = (resp && resp.selection) || '';
-    } catch {}
+    const selection = await getSelectionFromTab(tab.id);
     if (selection) {
       preview.textContent = truncate(selection, 200);
       banner.hidden = false;
@@ -101,11 +230,7 @@ function renderPageActions() {
         const tabs = await browser.tabs.query({ active: true, currentWindow: true });
         if (!tabs || !tabs.length) return;
         const tab = tabs[0];
-        let pageMeta = { title: tab.title || '', url: tab.url || '', description: '' };
-        try {
-          const resp = await browser.tabs.sendMessage(tab.id, { type: 'get-page-meta' });
-          if (resp && resp.title) pageMeta = resp;
-        } catch {}
+        const pageMeta = await getPageMetaFromTab(tab.id);
         await browser.runtime.sendMessage({
           type: MSG.PAGE_ACTION,
           payload: {
@@ -128,11 +253,7 @@ function renderPageActions() {
         const tabs = await browser.tabs.query({ active: true, currentWindow: true });
         if (!tabs || !tabs.length) return;
         const tab = tabs[0];
-        let pageMeta = { title: tab.title || '', url: tab.url || '', description: '' };
-        try {
-          const resp = await browser.tabs.sendMessage(tab.id, { type: 'get-page-meta' });
-          if (resp && resp.title) pageMeta = resp;
-        } catch {}
+        const pageMeta = await getPageMetaFromTab(tab.id);
         await browser.runtime.sendMessage({
           type: MSG.PAGE_ACTION,
           payload: {
@@ -158,6 +279,8 @@ function renderCategories() {
     btn.className = 'category-card';
     btn.type = 'button';
     btn.dataset.category = cat.id;
+    // Title attribute so the full label is visible on hover even when truncated.
+    btn.title = t(cat.labelKey) || cat.defaultLabel;
     const iconSpan = document.createElement('span');
     iconSpan.className = 'cat-icon';
     iconSpan.setAttribute('aria-hidden', 'true');
@@ -175,6 +298,7 @@ function renderCategories() {
   myBtn.className = 'category-card';
   myBtn.type = 'button';
   myBtn.dataset.category = 'myprompts';
+  myBtn.title = t('categoryMyPrompts') || 'My Prompts';
   const myIcon = document.createElement('span');
   myIcon.className = 'cat-icon';
   myIcon.setAttribute('aria-hidden', 'true');
@@ -436,14 +560,4 @@ function renderEmpty(message) {
   div.textContent = message;
   li.appendChild(div);
   list.appendChild(li);
-}
-
-function escapeText(s) {
-  if (!s) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }

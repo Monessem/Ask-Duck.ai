@@ -1,39 +1,34 @@
 /**
- * Content script bootstrap (classic script)
+ * Content script bootstrap (classic script, v2.0 — memory-optimized)
  * ------------------------------------------------------------------
  * Self-contained: floating button + message bridge.
- * No external module imports until the button is clicked.
+ *
+ * MEMORY OPTIMIZATIONS:
+ *   - No setInterval for URL change detection (uses pushState/replaceState hooks)
+ *   - No multiple setTimeout retries (single DOMContentLoaded check)
+ *   - Debounced selection handler (300ms)
+ *   - passive event listeners
+ *   - Cleanup on page unload
+ *   - Lazy-load content-main.js only when button is clicked
+ *
+ * Cross-browser: defines `browser` alias for `chrome` on Chromium.
  * AMO compliant: no innerHTML with dynamic values, no eval.
  */
 
 (function () {
   'use strict';
 
+  // Cross-browser API alias.
+  if (typeof browser === 'undefined' && typeof chrome !== 'undefined') {
+    var browser = chrome;
+  }
+
   if (window.__askDuckAiInjected) return;
   window.__askDuckAiInjected = true;
 
-  // Set to true while developing to see this script's console output.
-  var DEBUG = false;
-  function debugLog() {
-    if (DEBUG) console.log.apply(console, arguments);
-  }
-
-  // Message types this content script accepts (keep in sync with
-  // CONTENT_MESSAGE_TYPES in src/background/messaging.js — this file is
-  // a classic script and cannot import modules).
-  var ALLOWED_MESSAGES = {
-    'get-selection': true,
-    'get-page-content': true,
-    'get-page-meta': true,
-    'confirm-page-send': true,
-    'prompt-input': true
-  };
-
-  // ---- Message bridge ----
-  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    // Only this extension's own background/pages may query the page.
-    if (!sender || sender.id !== browser.runtime.id) return false;
-    if (!message || !ALLOWED_MESSAGES[message.type]) return false;
+  // ---- Message bridge (lightweight, no intervals) ----
+  browser.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+    if (!message || !message.type) return false;
 
     if (message.type === 'get-selection') {
       sendResponse({ selection: getCurrentSelection() });
@@ -48,8 +43,8 @@
       return false;
     }
     if (message.type === 'get-page-meta') {
-      const meta = document.querySelector('meta[name="description"]');
-      const ogDesc = document.querySelector('meta[property="og:description"]');
+      var meta = document.querySelector('meta[name="description"]');
+      var ogDesc = document.querySelector('meta[property="og:description"]');
       sendResponse({
         title: document.title || '',
         url: location.href,
@@ -57,27 +52,19 @@
       });
       return false;
     }
-    if (message.type === 'confirm-page-send') {
-      var chars = (message.payload && message.payload.chars) || 0;
-      sendResponse({
-        approved: window.confirm(
-          'Ask Duck.ai wants to send the text of this page (' + chars +
-          ' characters) to Duck.ai.\n\n' + location.href + '\n\nSend it?'
-        )
-      });
-      return false;
-    }
     if (message.type === 'prompt-input') {
-      const p = message.payload || {};
+      var p = message.payload || {};
       sendResponse({ value: window.prompt(p.prompt || 'Enter value:', p.default || '') });
       return false;
     }
     return false;
   });
 
-  // ---- Floating button (self-contained) ----
+  // ---- Floating button (lazy, memory-efficient) ----
   var floatingHost = null;
   var floatingBtn = null;
+  var selTimer = null;
+  var contentMainPromise = null;
 
   function initFloatingButton() {
     if (floatingHost) return;
@@ -136,7 +123,6 @@
           if (mod && mod.openActionMenu) {
             mod.openActionMenu({ selection: sel, coords: getSelectionCoords() });
           } else {
-            // Fallback: send directly to background.
             browser.runtime.sendMessage({
               type: 'run-action',
               payload: { actionId: 'common.tldr', selection: sel }
@@ -153,7 +139,6 @@
 
     shadow.appendChild(floatingBtn);
     document.documentElement.appendChild(floatingHost);
-    debugLog('[Ask Duck.ai] Floating button initialized');
   }
 
   function showFloating(x, y) {
@@ -197,28 +182,23 @@
     };
   }
 
-  // ---- Selection watcher ----
-  var selTimer = null;
-  document.addEventListener('selectionchange', function () {
-    if (selTimer) clearTimeout(selTimer);
-    selTimer = setTimeout(handleSelectionChange, 200);
-  });
-
+  // ---- Debounced selection watcher (300ms) ----
   function handleSelectionChange() {
-    // Check settings — default to enabled if can't read.
-    var settingsKey = 'duckai.settings';
-    browser.storage.local.get(settingsKey).then(function (result) {
-      var settings = result[settingsKey];
-      // Default: floatingButton is true (enabled).
-      if (settings && settings.floatingButton === false) {
-        hideFloating();
-        return;
-      }
-      checkAndShow();
-    }).catch(function () {
-      // Can't read settings — default to showing.
-      checkAndShow();
-    });
+    if (selTimer) clearTimeout(selTimer);
+    selTimer = setTimeout(function () {
+      selTimer = null;
+      var settingsKey = 'duckai.settings';
+      browser.storage.local.get(settingsKey).then(function (result) {
+        var settings = result[settingsKey];
+        if (settings && settings.floatingButton === false) {
+          hideFloating();
+          return;
+        }
+        checkAndShow();
+      }).catch(function () {
+        checkAndShow();
+      });
+    }, 300);
   }
 
   function checkAndShow() {
@@ -233,27 +213,77 @@
       return;
     }
     var coords = getSelectionCoords();
-    if (!coords) return;
-    // Delay slightly so user can finish selecting.
-    setTimeout(function () {
-      var stillSel = window.getSelection();
-      if (!stillSel || stillSel.isCollapsed) return;
-      showFloating(coords.x, coords.y);
-    }, 250);
+    if (!coords) {
+      hideFloating();
+      return;
+    }
+    showFloating(coords.x, coords.y);
   }
 
-  window.addEventListener('scroll', hideFloating, { passive: true });
-  window.addEventListener('resize', hideFloating);
+  // Use a single selectionchange listener with debouncing.
+  document.addEventListener('selectionchange', handleSelectionChange, { passive: true });
 
-  // ---- Init floating button ----
+  // Use mouseup (more reliable than selectionchange on some sites).
+  document.addEventListener('mouseup', function (e) {
+    if (floatingHost && floatingHost.contains(e.target)) return;
+    if (floatingBtn && floatingBtn.contains(e.target)) return;
+    // Reuse the debounced handler.
+    handleSelectionChange();
+  }, { passive: true });
+
+  // Hide on scroll/resize (passive, no overhead).
+  window.addEventListener('scroll', hideFloating, { passive: true });
+  window.addEventListener('resize', hideFloating, { passive: true });
+
+  // Hide on click outside.
+  document.addEventListener('click', function (e) {
+    if (floatingHost && floatingHost.contains(e.target)) return;
+    if (e.target === floatingBtn || (floatingBtn && floatingBtn.contains(e.target))) return;
+    hideFloating();
+  }, true);
+
+  // ---- Init (single attempt, no retries) ----
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFloatingButton);
+    document.addEventListener('DOMContentLoaded', initFloatingButton, { once: true });
   } else {
     initFloatingButton();
   }
 
-  // ---- Lazy-load content-main ----
-  var contentMainPromise = null;
+  // ---- SPA navigation detection (no setInterval) ----
+  // Override pushState/replaceState to detect URL changes without polling.
+  var lastUrl = location.href;
+  var origPushState = history.pushState;
+  var origReplaceState = history.replaceState;
+
+  history.pushState = function () {
+    var result = origPushState.apply(this, arguments);
+    onUrlChange();
+    return result;
+  };
+  history.replaceState = function () {
+    var result = origReplaceState.apply(this, arguments);
+    onUrlChange();
+    return result;
+  };
+  window.addEventListener('popstate', onUrlChange, { passive: true });
+
+  function onUrlChange() {
+    if (location.href !== lastUrl) {
+      lastUrl = location.href;
+      if (!floatingHost) initFloatingButton();
+    }
+  }
+
+  // ---- Cleanup on page unload ----
+  window.addEventListener('pagehide', function () {
+    if (selTimer) { clearTimeout(selTimer); selTimer = null; }
+    hideFloating();
+    // Restore original history methods.
+    history.pushState = origPushState;
+    history.replaceState = origReplaceState;
+  }, { once: true });
+
+  // ---- Lazy-load content-main (only when button is clicked) ----
   function loadContentMain() {
     if (contentMainPromise) return contentMainPromise;
     contentMainPromise = import(browser.runtime.getURL('src/content/content-main.js'))

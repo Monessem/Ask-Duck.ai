@@ -18,14 +18,14 @@
 (function () {
   'use strict';
 
-  // Set to true while developing to see the injector's console output.
-  const DEBUG = false;
-  function debugLog() {
-    if (DEBUG) console.log.apply(console, arguments);
+  // Cross-browser: Firefox has `browser`, Chromium has `chrome`.
+  var browser = typeof browser !== 'undefined' ? browser : (typeof chrome !== 'undefined' ? chrome : null);
+  if (!browser) {
+    console.error('[Ask Duck.ai] No browser API found in injector');
+    return;
   }
 
   const PROMPTS_KEY = 'duckai.prompts';
-  const PROMPT_TTL_MS = 10 * 60 * 1000;
   const SETTINGS_KEY = 'duckai.settings';
   const POLL_MS = 150;
   const MAX_WAIT_MS = 30000;
@@ -33,137 +33,317 @@
   if (window.__duckaiInjectorLoaded) return;
   window.__duckaiInjectorLoaded = true;
 
+  console.log('[Ask Duck.ai] Injector loaded on', location.href);
+
   let processing = false;
   let captchaActive = false;
   let processedId = null;
   let currentDirection = null;
+  let dirTimer = null;
+  let checkTimer = null;
 
-  // The chat UI keeps mutating, so polling only runs for a bounded
-  // window after a prompt arrives instead of for the tab's lifetime.
-  let pollTimer = null;
-  let pollDeadline = 0;
+  // Start with a single check after a short delay.
+  setTimeout(check, 200);
 
-  function startPolling() {
-    pollDeadline = Date.now() + MAX_WAIT_MS;
-    if (pollTimer) return;
-    pollTimer = setInterval(() => {
-      if (Date.now() > pollDeadline || (!getPromptIdFromUrl() && !processing)) {
-        clearInterval(pollTimer);
-        pollTimer = null;
-        return;
-      }
-      check();
-    }, 500);
-  }
-
-  setTimeout(check, 100);
-  startPolling();
+  // Listen for hash changes (when a new prompt is sent).
   window.addEventListener('hashchange', () => {
     // Reset processedId so we can process a new prompt on the same tab.
     processedId = null;
     setTimeout(check, 100);
-    startPolling();
   });
 
+  // Apply text direction with debounce (not on every mutation).
+  // Duck.ai is a SPA — React re-renders constantly. A 500ms debounce
+  // is sufficient and dramatically reduces CPU usage.
+  function debouncedApplyDirection() {
+    if (dirTimer) clearTimeout(dirTimer);
+    dirTimer = setTimeout(function () {
+      dirTimer = null;
+      applyTextDirection();
+    }, 500);
+  }
+
+  // Initial direction application.
   applyTextDirection();
 
-  // Re-apply on DOM changes (Duck.ai is a SPA). Coalesced into one call
-  // per animation frame so a busy chat stream stays cheap.
-  let dirScheduled = false;
-  const dirObserver = new MutationObserver(() => {
-    if (dirScheduled) return;
-    dirScheduled = true;
-    requestAnimationFrame(() => {
-      dirScheduled = false;
-      applyTextDirection();
-    });
-  });
+  // Re-apply on DOM changes, but DEBOUNCED to avoid CPU spikes.
+  // Only observe childList changes (not attribute changes — those
+  // fire too frequently on React apps and cause performance issues).
+  const dirObserver = new MutationObserver(debouncedApplyDirection);
   if (document.documentElement) {
-    dirObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['dir'] });
+    dirObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true
+      // Removed: attributes: true, attributeFilter: ['dir', 'style', 'class']
+      // These fire too often on React apps. The 500ms debounce on
+      // childList changes is more than enough.
+    });
   }
+
+  // Cleanup on page unload to prevent memory leaks.
+  window.addEventListener('pagehide', function () {
+    if (dirTimer) { clearTimeout(dirTimer); dirTimer = null; }
+    if (checkTimer) { clearTimeout(checkTimer); checkTimer = null; }
+    dirObserver.disconnect();
+  }, { once: true });
 
   function storage() {
     return browser.storage.local;
   }
 
-  // ====== Text Direction Forcing (question + answer only) ======
+  // ====== Arabic text detection ======
+  // Unicode ranges for Arabic script:
+  //   U+0600–U+06FF  Arabic
+  //   U+0750–U+077F  Arabic Supplement
+  //   U+FB50–U+FDFF  Arabic Presentation Forms-A
+  //   U+FE70–U+FEFF  Arabic Presentation Forms-B
+  var ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/g;
+
+  /**
+   * Check if a text string contains enough Arabic characters to be
+   * considered "Arabic text" (needs RTL rendering).
+   *
+   * Rule: if Arabic characters make up at least 30% of all letter
+   * characters (Arabic + Latin letters), treat the text as Arabic.
+   * This handles mixed Arabic/English content correctly — a paragraph
+   * with one Arabic word in an English sentence stays LTR, but a
+   * paragraph that's predominantly Arabic becomes RTL.
+   *
+   * @param {string} text
+   * @returns {boolean}
+   */
+  function isArabicText(text) {
+    if (!text) return false;
+    var arabicMatches = text.match(ARABIC_RE);
+    var arabicCount = arabicMatches ? arabicMatches.length : 0;
+    if (arabicCount === 0) return false;
+    // Count Latin letters for comparison.
+    var latinMatches = text.match(/[a-zA-Z]/g);
+    var latinCount = latinMatches ? latinMatches.length : 0;
+    var total = arabicCount + latinCount;
+    if (total === 0) return false;
+    return (arabicCount / total) >= 0.30;
+  }
+
+  // ====== Text Direction (per-message Arabic detection) ======
+  // Instead of forcing a single global direction, we detect the
+  // language of EACH message individually:
+  //   - Arabic-dominant messages → dir="rtl", text-align: right
+  //   - English/other messages   → dir="ltr", text-align: left
+  //   - Code blocks              → always dir="ltr"
+  //
+  // This keeps the Duck.ai UI fully LTR (navigation, buttons, icons)
+  // while rendering Arabic responses correctly in RTL.
   async function applyTextDirection() {
     try {
-      const settings = await getSettings();
-      let dir = settings.textDirection || 'auto';
+      var settings = await getSettings();
+      var mode = settings.textDirection || 'auto';
 
-      // Auto: derive from response language.
-      if (dir === 'auto') {
-        const RTL_LANGS = ['ar', 'he', 'fa', 'ur'];
-        if (settings.responseLanguage && RTL_LANGS.includes(settings.responseLanguage)) {
-          dir = 'rtl';
-        } else {
-          // For auto + non-RTL language, don't force anything.
-          removeDirectionStyle();
-          currentDirection = null;
-          return;
-        }
+      // Inject the base CSS (only once).
+      ensureDirectionStyle();
+
+      if (mode === 'rtl') {
+        // Force ALL messages to RTL (user override).
+        tagAssistantResponses();
+        setAllMessagesDirection('rtl');
+        return;
+      }
+      if (mode === 'ltr') {
+        // Force ALL messages to LTR (user override).
+        tagAssistantResponses();
+        setAllMessagesDirection('ltr');
+        return;
       }
 
-      // Only apply if changed.
-      if (dir === currentDirection) return;
-      currentDirection = dir;
-
-      // Inject CSS targeting ONLY the question (user message) and answer (assistant message).
-      // Duck.ai structure:
-      //   - User message: [data-testid="user-message"] contains a div with the text
-      //   - Assistant message: rendered in a prose/markdown container after user message
-      // We target ONLY the text content divs, not the whole message wrapper,
-      // to avoid affecting avatars, timestamps, buttons, etc.
-      let style = document.getElementById('duckai-rtl-style');
-      if (!style) {
-        style = document.createElement('style');
-        style.id = 'duckai-rtl-style';
-        document.head.appendChild(style);
-      }
-      // Target ONLY the actual text content of messages.
-      // - [data-testid="user-message"] > div (the text bubble)
-      // - .prose, .markdown (assistant response text)
-      // - [data-testid="assistant-message"] .prose
-      style.textContent = `
-        /* User question text only */
-        [data-testid="user-message"] > div,
-        [data-testid="user-message"] > div * {
-          direction: ${dir} !important;
-          text-align: ${dir === 'rtl' ? 'right' : 'left'} !important;
-        }
-        /* Assistant answer text only (prose/markdown content) */
-        [data-testid="assistant-message"] .prose,
-        [data-testid="assistant-message"] .prose *,
-        [data-testid="assistant-message"] .markdown,
-        [data-testid="assistant-message"] .markdown *,
-        [data-testid="assistant-message"] [class*="prose"],
-        [data-testid="assistant-message"] [class*="prose"] * {
-          direction: ${dir} !important;
-          text-align: ${dir === 'rtl' ? 'right' : 'left'} !important;
-        }
-        /* Chat input textarea (where you type) */
-        textarea[name="user-prompt"],
-        textarea[data-testid*="chat-input"] {
-          direction: ${dir} !important;
-          text-align: ${dir === 'rtl' ? 'right' : 'left'} !important;
-        }
-        /* Code blocks always LTR — never flip */
-        pre, code, pre *, code *, [class*="code-block"], [class*="CodeBlock"], [data-testid*="code"], .prose pre, .prose code, .markdown pre, .markdown code {
-          direction: ltr !important;
-          text-align: left !important;
-        }
-      `;
-
-      debugLog('[Ask Duck.ai] Applied text direction (Q&A only):', dir);
+      // Auto mode: detect Arabic per message.
+      tagAssistantResponses();
+      detectAndApplyDirections();
     } catch (e) {
       // Settings not ready yet — retry later.
     }
   }
 
+  /**
+   * Inject the base CSS that handles code blocks (always LTR) and
+   * the input textarea (auto-detect). This is injected once and
+   * doesn't need to change per-message.
+   */
+  function ensureDirectionStyle() {
+    var style = document.getElementById('duckai-rtl-style');
+    if (style) return;
+    style = document.createElement('style');
+    style.id = 'duckai-rtl-style';
+    style.textContent =
+      /* Code blocks are always LTR, regardless of message direction */
+      '[data-testid="user-message"] pre,' +
+      '[data-testid="user-message"] code,' +
+      '[data-testid="user-message"] + div pre,' +
+      '[data-testid="user-message"] + div code,' +
+      '[data-duckai-response] pre,' +
+      '[data-duckai-response] code,' +
+      '[data-testid="assistant-message"] pre,' +
+      '[data-testid="assistant-message"] code {' +
+        'direction: ltr !important;' +
+        'text-align: left !important;' +
+      '}' +
+      /* Chat input: auto-detect based on content */
+      'textarea[name="user-prompt"],' +
+      '[data-testid="duckai-chat-input"] textarea {' +
+        'unicode-bidi: plaintext !important;' +
+      '}';
+    document.head.appendChild(style);
+  }
+
   function removeDirectionStyle() {
-    const style = document.getElementById('duckai-rtl-style');
+    var style = document.getElementById('duckai-rtl-style');
     if (style) style.remove();
+  }
+
+  /**
+   * Force a single direction on all message elements.
+   * Used when the user explicitly selects RTL or LTR mode.
+   */
+  function setAllMessagesDirection(dir) {
+    var align = dir === 'rtl' ? 'right' : 'left';
+    var selectors = [
+      '[data-testid="user-message"]',
+      '[data-duckai-response]',
+      '[data-testid="assistant-message"]'
+    ];
+    selectors.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el) {
+        el.setAttribute('dir', dir);
+        el.style.direction = dir;
+        el.style.textAlign = align;
+        // Children except code.
+        el.querySelectorAll('*:not(pre):not(code)').forEach(function (child) {
+          child.setAttribute('dir', dir);
+          child.style.direction = dir;
+          child.style.textAlign = align;
+        });
+        // Code → always LTR.
+        el.querySelectorAll('pre, code').forEach(function (code) {
+          code.setAttribute('dir', 'ltr');
+          code.style.direction = 'ltr';
+          code.style.textAlign = 'left';
+        });
+      });
+    });
+    // Sibling after user-message (untagged responses).
+    document.querySelectorAll('[data-testid="user-message"]').forEach(function (userMsg) {
+      var sibling = userMsg.nextElementSibling;
+      if (sibling && !sibling.hasAttribute('data-duckai-response')) {
+        var text = (sibling.textContent || '').trim();
+        if (text.indexOf('Anonymized by DuckDuckGo') >= 0) {
+          sibling = sibling.nextElementSibling;
+        }
+      }
+      if (sibling) {
+        sibling.setAttribute('dir', dir);
+        sibling.style.direction = dir;
+        sibling.style.textAlign = align;
+      }
+    });
+  }
+
+  /**
+   * Auto-detect Arabic text in each message and apply the correct
+   * direction individually. This is the core of the per-message
+   * RTL/LTR system.
+   *
+   * - User messages: detect based on the user's input text
+   * - Assistant responses: detect based on the response text
+   * - Code blocks: always LTR (handled by CSS)
+   * - Mixed content: uses unicode-bidi:plaintext for proper rendering
+   */
+  function detectAndApplyDirections() {
+    // User messages.
+    document.querySelectorAll('[data-testid="user-message"]').forEach(function (el) {
+      var text = el.textContent || '';
+      var dir = isArabicText(text) ? 'rtl' : 'ltr';
+      applyDirectionToElement(el, dir);
+    });
+
+    // Assistant responses (tagged by tagAssistantResponses).
+    document.querySelectorAll('[data-duckai-response]').forEach(function (el) {
+      var text = el.textContent || '';
+      var dir = isArabicText(text) ? 'rtl' : 'ltr';
+      applyDirectionToElement(el, dir);
+    });
+
+    // Also handle the sibling after user-message (untagged responses).
+    document.querySelectorAll('[data-testid="user-message"]').forEach(function (userMsg) {
+      var sibling = userMsg.nextElementSibling;
+      if (sibling && !sibling.hasAttribute('data-duckai-response')) {
+        var text = (sibling.textContent || '').trim();
+        if (text.indexOf('Anonymized by DuckDuckGo') >= 0) {
+          sibling = sibling.nextElementSibling;
+        }
+      }
+      if (sibling) {
+        var sibText = sibling.textContent || '';
+        var dir = isArabicText(sibText) ? 'rtl' : 'ltr';
+        applyDirectionToElement(sibling, dir);
+      }
+    });
+
+    // Chat input: use plaintext bidi so it auto-detects as user types.
+    document.querySelectorAll('textarea[name="user-prompt"], [data-testid="duckai-chat-input"] textarea').forEach(function (input) {
+      input.setAttribute('dir', 'auto');
+      input.style.unicodeBidi = 'plaintext';
+    });
+  }
+
+  /**
+   * Apply direction to an element and its children (except code blocks).
+   * @param {Element} el
+   * @param {string} dir - 'rtl' or 'ltr'
+   */
+  function applyDirectionToElement(el, dir) {
+    var align = dir === 'rtl' ? 'right' : 'left';
+    el.setAttribute('dir', dir);
+    el.style.direction = dir;
+    el.style.textAlign = align;
+    // Apply to children except code blocks (which stay LTR via CSS).
+    el.querySelectorAll('*:not(pre):not(code):not(pre *):not(code *)').forEach(function (child) {
+      child.setAttribute('dir', dir);
+      child.style.direction = dir;
+      child.style.textAlign = align;
+    });
+    // Code blocks: force LTR.
+    el.querySelectorAll('pre, code').forEach(function (code) {
+      code.setAttribute('dir', 'ltr');
+      code.style.direction = 'ltr';
+      code.style.textAlign = 'left';
+    });
+  }
+
+  /**
+   * Find all user messages and tag the sibling after each one
+   * (the assistant response) with data-duckai-response.
+   * This runs periodically to catch dynamically added messages.
+   */
+  function tagAssistantResponses() {
+    try {
+      var userMsgs = document.querySelectorAll('[data-testid="user-message"]');
+      userMsgs.forEach(function (userMsg) {
+        var sibling = userMsg.nextElementSibling;
+        if (sibling && !sibling.hasAttribute('data-duckai-response')) {
+          // Skip if it's the notice/banner div.
+          var text = (sibling.textContent || '').trim();
+          if (text.indexOf('Anonymized by DuckDuckGo') >= 0) {
+            // This is the privacy notice, not the response.
+            // Look at the next sibling.
+            sibling = sibling.nextElementSibling;
+          }
+          if (sibling) {
+            sibling.setAttribute('data-duckai-response', 'true');
+          }
+        }
+      });
+    } catch (e) {
+      // Non-fatal.
+    }
   }
 
   async function getSettings() {
@@ -195,12 +375,12 @@
       return;
     }
 
-
+    console.log('[Ask Duck.ai] Got prompt:', promptId, 'autoSubmit:', payload.autoSubmit, 'len:', payload.prompt.length);
 
     if (isCaptchaPage()) {
       if (!captchaActive) {
         captchaActive = true;
-        debugLog('[Ask Duck.ai] CAPTCHA detected, waiting');
+        console.log('[Ask Duck.ai] CAPTCHA detected, waiting');
         showCaptchaBanner();
       }
       return;
@@ -217,7 +397,7 @@
     try {
       await inject(payload);
       await deletePrompt(promptId);
-      debugLog('[Ask Duck.ai] Injection complete');
+      console.log('[Ask Duck.ai] Injection complete');
       try { history.replaceState(null, '', location.pathname + location.search); } catch {}
     } catch (err) {
       console.warn('[Ask Duck.ai] Injection failed:', err.message);
@@ -233,13 +413,7 @@
     try {
       const result = await storage().get(PROMPTS_KEY);
       const map = (result[PROMPTS_KEY] && typeof result[PROMPTS_KEY] === 'object') ? result[PROMPTS_KEY] : {};
-      const item = map[id];
-      if (!item || typeof item.prompt !== 'string') return null;
-      if (item.timestamp && Date.now() - item.timestamp > PROMPT_TTL_MS) {
-        await deletePrompt(id);
-        return null;
-      }
-      return item;
+      return map[id] || null;
     } catch (e) {
       return null;
     }
@@ -266,7 +440,7 @@
     }, MAX_WAIT_MS);
     if (!ta) throw new Error('Textarea not found or disabled');
 
-    debugLog('[Ask Duck.ai] Textarea found, setting value...');
+    console.log('[Ask Duck.ai] Textarea found, setting value...');
     ta.focus();
     ta.click();
     setReactValue(ta, prompt);
@@ -285,7 +459,7 @@
       }, 5000);
       if (btn) {
         btn.click();
-        debugLog('[Ask Duck.ai] Send clicked');
+        console.log('[Ask Duck.ai] Send clicked');
       } else {
         ta.dispatchEvent(new KeyboardEvent('keydown', {
           key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
@@ -411,12 +585,11 @@
       'background:#92400e;color:#fff;padding:14px 16px;border-radius:10px;' +
       'font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;' +
       'box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:600px;margin:0 auto;';
-    const label = document.createElement('strong');
-    label.textContent = 'Ask Duck.ai:';
-    b.appendChild(label);
-    b.appendChild(document.createTextNode(
-      ' Solve the verification challenge — your prompt will be sent automatically.'
-    ));
+    b.textContent = '';
+    var strong = document.createElement('strong');
+    strong.textContent = 'Ask Duck.ai:';
+    b.appendChild(strong);
+    b.appendChild(document.createTextNode(' Solve the verification challenge — your prompt will be sent automatically.'));
     document.body.appendChild(b);
   }
 

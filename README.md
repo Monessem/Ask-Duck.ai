@@ -106,68 +106,49 @@ duckai-assistant/
 ├── icons/                     # 16, 32, 48, 96, 128 PNG icons
 ├── docs/
 │   └── ARCHITECTURE.md
-├── scripts/
-│   ├── build.mjs              # Packages the xpi + chromium zip
-│   └── check.mjs              # Syntax / import / manifest checks
-├── tests/                     # node:test unit tests
 └── src/
     ├── background/
     │   ├── service-worker.js  # Background entry; routes messages
     │   ├── context-menu.js    # Builds the right-click menu
-    │   └── messaging.js       # Message type constants + allowlists
+    │   ├── commands.js        # Keyboard shortcut handler
+    │   └── messaging.js       # Message type constants + helpers
     ├── content/
-    │   ├── content-script.js  # Per-page entry (classic script bootstrap)
-    │   ├── content-main.js    # Real content module, dynamically imported
-    │   ├── action-menu.js     # Action panel near the selection (shadow DOM)
-    │   ├── duckai-injector.js # Fills the prompt into the Duck.ai chat box
+    │   ├── content-script.js  # Per-page entry; bridges background <-> UI
+    │   ├── floating-button.js # The small "Ask Duck.ai" button near selections
+    │   ├── response-panel.js  # The side panel UI (shadow DOM)
     │   └── content.css
-    ├── platform/
-    │   └── polyfill.js        # Aliases chrome.* to browser.* on Chromium
     ├── popup/
+    │   ├── popup.html
+    │   ├── popup.css
+    │   └── popup.js
     ├── options/
-    ├── support/
+    │   ├── options.html
+    │   ├── options.css
+    │   └── options.js
     ├── services/
     │   ├── duckai/
-    │   │   └── duckai-client.js  # Pending prompts + Duck.ai URL building
+    │   │   ├── duckai-client.js  # UNOFFICIAL Duck.ai HTTP/SSE client
+    │   │   ├── duckai-service.js # Conversation state + retry
+    │   │   └── models.js         # Model catalog
     │   ├── storage.js
     │   ├── settings.js
-    │   ├── validation.js     # Schema for settings and imported backups
-    │   ├── custom-prompts.js
-    │   ├── user-prompts.js
-    │   ├── recent-actions.js
-    │   ├── import-export.js
     │   ├── history.js
     │   └── error-handler.js
     ├── prompts/
     │   ├── prompt-builder.js  # Safe prompt construction (anti-injection)
     │   └── actions.js         # Action catalog
-    └── utils/
-        ├── sanitize.js        # DOM + text sanitization
-        ├── detect.js          # Content type detection
-        ├── i18n.js            # Localization helpers
-        ├── theme.js           # Theme application
-        ├── debug.js           # Debug logging switch
-        └── helpers.js
+    ├── utils/
+    │   ├── sanitize.js        # DOM + text sanitization
+    │   ├── detect.js          # Content type detection
+    │   ├── i18n.js            # Localization helpers
+    │   ├── theme.js           # Theme application
+    │   ├── markdown.js        # Minimal Markdown renderer
+    │   └── helpers.js
+    └── styles/
+        └── shared.css
 ```
 
 ## Installation
-via mozilla 
-https://addons.mozilla.org/en-US/firefox/addon/askduckai/
-via MS edge 
-https://microsoftedge.microsoft.com/addons/detail/ask-duckai/ekdhaoklggdgkppggnpmaohegeglphgb 
-
-To install a locally stored extension on Chrome or Brave and Based browser , follow these steps:
-
-1. Download an extension is in a `.zip` file, extract it into a folder. Ensure you can see the `manifest.json` file inside that folder.
-2. Open your browser and navigate to:
-   chrome://extensions
-   (For Brave, you can also use `brave://extensions`).
-3. Enable **Developer mode** using the toggle in the upper-right corner.
-4. Click **Load unpacked**.
-5. Select the extracted folder containing the `manifest.json` file.
-6. The extension will now be installed and enabled.
-
-To update the extension, modify the files in the folder and click the **Reload** button on the extensions page.
 
 ### Temporary install (for testing)
 
@@ -188,7 +169,9 @@ To distribute the extension or install it permanently, it must be signed by Mozi
 
 1. Build the package:
    ```bash
-   npm run build:firefox   # dist/askduckai-<version>.xpi
+   cd duckai-assistant
+   zip -r ../duckai-assistant-1.0.0.zip . -x "*.git*" "*.DS_Store"
+   mv ../duckai-assistant-1.0.0.zip ../duckai-assistant-1.0.0.xpi
    ```
 2. Submit the `.xpi` to <https://addons.mozilla.org/developers/>.
 3. After Mozilla reviews and signs it, install from the Add-ons marketplace.
@@ -223,38 +206,36 @@ The background service worker and the popup/options pages use static imports nor
 - In `about:debugging` → **This Firefox**, click **Reload** next to Ask Duck.ai.
 - For content script changes, also reload the target webpage.
 
-### Checks
+### Linting (optional)
 
-The extension is written in vanilla ES2022+ JavaScript with JSDoc type annotations and has no runtime or build dependencies.
+The extension is written in vanilla ES2022+ JavaScript with JSDoc type annotations. To type-check:
 
 ```bash
-npm run lint   # scripts/check.mjs
-npm test       # tests/
+# Install TypeScript once
+npm install -g typescript
+
+# Run a check
+tsc --noEmit --allowJs --checkJs --target ES2022 --module ESNext \
+    --moduleResolution bundler --strict \
+    src/**/*.js
 ```
 
-`npm run lint` parses every file, resolves every relative import, verifies that every path named in `manifest.json` exists, that the manifest and `package.json` versions agree, and that every module reachable from a content script is listed in `web_accessible_resources`.
+(Linting is optional — the extension runs without it.)
 
 ## Build Instructions
 
-The extension has **no compile step** — what you see in `src/` is what runs in the browser. The build only stages the shipped files and rewrites the manifest per target (Firefox uses `background.scripts`, Chromium uses `background.service_worker`).
+The extension has **no compile step** — what you see in `src/` is what runs in Firefox. To produce a distributable package:
 
 ```bash
-npm run lint     # syntax, imports, manifest paths, version match
-npm test         # unit tests (node:test, no dependencies)
-npm run build    # both packages into dist/
+# From the project root:
+zip -r duckai-assistant-1.0.0.xpi . \
+  -x "*.git*" "*.DS_Store" "*.swp" "node_modules/*" "scripts/*" "docs/*"
+
+# Verify
+unzip -l duckai-assistant-1.0.0.xpi | head
 ```
 
-Output:
-
-| File | Target |
-|---|---|
-| `dist/askduckai-<version>.xpi` | Firefox (submit to AMO for signing) |
-| `dist/ask-duckai-chromium-<version>.zip` | Chrome / Edge / Brave (upload to the store, or unzip and "Load unpacked") |
-| `dist/chrome/`, `dist/firefox/` | unpacked staging directories, ready to load directly |
-
-A signed `.crx` is produced by the Chrome Web Store; it is not built here because it requires the publisher's private key.
-
-`dist/` is git-ignored — packages belong to releases, not to the repository.
+The `.xpi` is just a ZIP archive with the right structure. Mozilla signs it via AMO.
 
 ## Usage
 

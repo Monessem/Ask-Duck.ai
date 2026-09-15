@@ -9,7 +9,7 @@
  * Injected as a Shadow DOM so page CSS cannot leak in.
  */
 
-import { CATEGORIES, getActionsByCategory, TRANSLATE_LANGUAGES, getAction } from '../prompts/actions.js';
+import { CATEGORIES, getActionsByCategory, TRANSLATE_LANGUAGES } from '../prompts/actions.js';
 import { detectContentType } from '../utils/detect.js';
 import { getSettings } from '../services/settings.js';
 import { onSettingsChanged } from '../services/settings.js';
@@ -17,7 +17,6 @@ import { getUserPrompts } from '../services/user-prompts.js';
 import { resolveTheme } from '../utils/theme.js';
 import { t } from '../utils/i18n.js';
 import { MSG } from '../background/messaging.js';
-import { debugLog } from '../utils/debug.js';
 
 const MENU_HOST_ID = 'duckai-action-menu-host';
 
@@ -58,52 +57,9 @@ export function ensureMenu() {
   onSettingsChanged(() => applyTheme());
 }
 
-function buildTemplate() {
-  return `
-    <style>${menuCSS()}</style>
-    <div class="menu" role="dialog" aria-label="Ask Duck.ai" hidden>
-      <header class="menu-header">
-        <div class="brand">
-          <img class="logo-img" alt="" aria-hidden="true" />
-          <span class="title">Ask Duck.ai</span>
-        </div>
-        <button class="icon-btn" data-action="close" title="Close" aria-label="Close">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
-        </button>
-      </header>
-
-      <div class="selection-preview" hidden>
-        <span class="selection-label"></span>
-        <span class="selection-text"></span>
-      </div>
-
-      <div class="categories" role="tablist"></div>
-
-      <div class="actions-container">
-        <div class="custom-input-wrap" hidden>
-          <input class="custom-input" type="text" placeholder="" aria-label="Custom input" />
-          <button class="btn btn-primary custom-send" data-action="custom-send">Send</button>
-        </div>
-        <ul class="actions-list"></ul>
-      </div>
-
-      <footer class="menu-footer">
-        <div class="footer-actions">
-          <button class="footer-btn" data-action="open-duckai" title="Open Duck.ai">
-            <img class="footer-logo-img" alt="" aria-hidden="true" /> Open in Duck.ai
-          </button>
-          <button class="bmac-btn" data-action="bmac" title="Buy Me a Coffee">
-            ☕ Buy Me a Coffee
-          </button>
-        </div>
-      </footer>
-    </div>
-  `;
-}
-
 /**
- * Build the menu DOM using DOM API (AMO compliant).
- * Creates the same structure as buildTemplate() but without innerHTML.
+ * Build the menu DOM using DOM API (AMO compliant — no innerHTML
+ * with dynamic values; only static SVG/CSS strings).
  */
 function buildMenuDOM(root) {
   // Style element.
@@ -228,36 +184,36 @@ function menuCSS() {
     * { box-sizing: border-box; }
     .menu {
       pointer-events: auto;
-      width: 360px;
-      max-width: 92vw;
-      max-height: 600px;
+      width: 300px;
+      max-width: 90vw;
+      max-height: 70vh;
       background: var(--duckai-bg, #ffffff);
       color: var(--duckai-fg, #1f2937);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      font-size: 13px;
-      line-height: 1.5;
-      border-radius: 12px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.08);
+      font-size: 12px;
+      line-height: 1.4;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.06);
       border: 1px solid var(--duckai-border, #e5e7eb);
       display: flex;
       flex-direction: column;
       overflow: hidden;
       transform: scale(0.95);
       opacity: 0;
-      transition: transform 120ms ease, opacity 120ms ease;
+      transition: transform 100ms ease, opacity 100ms ease;
     }
     .menu.open { transform: scale(1); opacity: 1; }
     .menu[hidden] { display: none; }
 
     .menu-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--duckai-border, #e5e7eb);
       flex-shrink: 0;
     }
-    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand { display: flex; align-items: center; gap: 6px; }
     .logo-img {
-      width: 24px; height: 24px;
+      width: 20px; height: 20px;
       border-radius: 6px;
       flex-shrink: 0;
       object-fit: contain;
@@ -265,19 +221,19 @@ function menuCSS() {
     .title { font-weight: 600; font-size: 13px; }
     .icon-btn {
       background: transparent; color: inherit;
-      border: none; padding: 4px; border-radius: 6px;
+      border: none; padding: 3px; border-radius: 5px;
       cursor: pointer; line-height: 0;
     }
     .icon-btn:hover { background: var(--duckai-hover, #f3f4f6); }
     .icon-btn:focus-visible { outline: 2px solid var(--duckai-accent, #1f2937); outline-offset: 1px; }
 
     .selection-preview {
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: var(--duckai-hover, #f9fafb);
       border-bottom: 1px solid var(--duckai-border, #e5e7eb);
-      font-size: 11px;
+      font-size: 10px;
     }
-    .selection-label { color: var(--duckai-muted, #6b7280); display: block; margin-bottom: 2px; }
+    .selection-label { color: var(--duckai-muted, #6b7280); font-size: 9px; text-transform: uppercase; letter-spacing: 0.03em; }
     .selection-text {
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -290,20 +246,20 @@ function menuCSS() {
     .categories {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
-      padding: 8px 10px;
+      gap: 3px;
+      padding: 6px 8px;
       border-bottom: 1px solid var(--duckai-border, #e5e7eb);
       flex-shrink: 0;
     }
     .cat-pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 4px 8px;
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 7px;
       border-radius: 999px;
       border: 1px solid var(--duckai-border, #d1d5db);
       background: transparent;
       color: var(--duckai-fg, #1f2937);
       cursor: pointer;
-      font: inherit; font-size: 11px;
+      font: inherit; font-size: 12px;
       white-space: nowrap;
     }
     .cat-pill:hover { background: var(--duckai-hover, #f3f4f6); }
@@ -313,27 +269,27 @@ function menuCSS() {
       border-color: var(--duckai-accent, #1f2937);
     }
     .cat-pill:focus-visible { outline: 2px solid var(--duckai-accent, #1f2937); outline-offset: 1px; }
-    .cat-icon { font-size: 13px; line-height: 1; }
+    .cat-icon { font-size: 12px; line-height: 1; }
 
     .actions-container {
       flex: 1 1 auto;
       overflow-y: auto;
-      padding: 6px 8px;
+      padding: 4px 6px;
     }
 
     .custom-input-wrap {
-      display: flex; gap: 6px;
-      padding: 6px 4px 8px;
+      display: flex; gap: 4px;
+      padding: 4px 2px 6px;
     }
     .custom-input-wrap[hidden] { display: none; }
     .custom-input {
       flex: 1;
-      font: inherit; font-size: 12px;
-      padding: 6px 8px;
+      font: inherit; font-size: 11px;
+      padding: 4px 7px;
       background: var(--duckai-input-bg, #ffffff);
       color: var(--duckai-fg, #1f2937);
       border: 1px solid var(--duckai-border, #d1d5db);
-      border-radius: 6px;
+      border-radius: 5px;
     }
     .custom-input:focus { outline: 2px solid var(--duckai-accent, #1f2937); outline-offset: -1px; }
 
@@ -342,23 +298,23 @@ function menuCSS() {
       display: flex; flex-direction: column; gap: 1px;
     }
     .action-item {
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 5px;
       width: 100%;
       text-align: start;
       background: transparent; color: inherit;
       border: none;
-      padding: 7px 10px;
+      padding: 6px 8px;
       border-radius: 6px;
       cursor: pointer;
-      font: inherit; font-size: 12.5px;
+      font: inherit; font-size: 12px;
     }
     .action-item:hover { background: var(--duckai-hover, #f3f4f6); }
     .action-item:focus-visible { outline: 2px solid var(--duckai-accent, #1f2937); outline-offset: 1px; }
-    .action-item .arrow { margin-inline-start: auto; color: var(--duckai-muted, #9ca3af); font-size: 14px; }
+    .action-item .arrow { margin-inline-start: auto; color: var(--duckai-muted, #9ca3af); font-size: 12px; }
 
     .menu-footer {
       flex-shrink: 0;
-      padding: 6px 12px;
+      padding: 5px 8px;
       border-top: 1px solid var(--duckai-border, #e5e7eb);
       display: flex;
       align-items: center;
@@ -515,7 +471,7 @@ function wireEvents() {
     pill.type = 'button';
     pill.dataset.category = cat.id;
     pill.setAttribute('role', 'tab');
-    pill.innerHTML = '';
+    pill.textContent = '';
     const pillIcon = document.createElement('span');
     pillIcon.className = 'cat-icon';
     pillIcon.setAttribute('aria-hidden', 'true');
@@ -534,7 +490,7 @@ function wireEvents() {
   myPill.type = 'button';
   myPill.dataset.category = 'myprompts';
   myPill.setAttribute('role', 'tab');
-  myPill.innerHTML = '';
+  myPill.textContent = '';
   const myIcon = document.createElement('span');
   myIcon.className = 'cat-icon';
   myIcon.setAttribute('aria-hidden', 'true');
@@ -600,11 +556,11 @@ function getActiveCategory() {
  * Render user custom prompts in the actions list.
  */
 async function renderMyPrompts(actionsList) {
-  actionsList.innerHTML = '';
+  actionsList.textContent = '';
   const prompts = await getUserPrompts();
   if (prompts.length === 0) {
     const li = document.createElement('li');
-    li.innerHTML = '';
+    li.textContent = '';
     const div = document.createElement('div');
     div.style.cssText = 'padding:16px;text-align:center;color:var(--duckai-muted);font-size:11px';
     div.textContent = t('myPromptsEmptyMenu') || 'No custom prompts yet. Add them in Settings → My Prompts.';
@@ -616,7 +572,7 @@ async function renderMyPrompts(actionsList) {
     const li = document.createElement('li');
     const btn = document.createElement('button');
     btn.className = 'action-item';
-    btn.innerHTML = '';
+    btn.textContent = '';
     const span = document.createElement('span');
     span.textContent = `⭐ ${p.label}`;
     const arrow = document.createElement('span');
@@ -654,7 +610,7 @@ function selectCategory(categoryId) {
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.className = 'action-item';
-      btn.innerHTML = '';
+      btn.textContent = '';
     const span = document.createElement('span');
     span.textContent = `${lang.flag} ${t(lang.labelKey) || lang.defaultLabel}`;
     const arrow = document.createElement('span');
@@ -670,7 +626,7 @@ function selectCategory(categoryId) {
     const li = document.createElement('li');
     const btn = document.createElement('button');
     btn.className = 'action-item';
-    btn.innerHTML = '';
+    btn.textContent = '';
     const chooseSpan = document.createElement('span');
     chooseSpan.textContent = t('actionTranslateChoose') || 'Choose language...';
     const chooseArrow = document.createElement('span');
@@ -691,7 +647,7 @@ function selectCategory(categoryId) {
       const li = document.createElement('li');
       const btn = document.createElement('button');
       btn.className = 'action-item';
-      btn.innerHTML = '';
+      btn.textContent = '';
       const actSpan = document.createElement('span');
       actSpan.textContent = t(action.labelKey) || action.defaultLabel;
       const actArrow = document.createElement('span');
@@ -788,45 +744,63 @@ export async function openMenu(opts) {
     // Select the top suggested category.
     selectCategory(firstCat);
 
-    debugLog('[Ask Duck.ai] Smart detection:', detection.type, '→ categories:', suggestedCats.join(', '), 'confidence:', detection.confidence);
+    console.log('[Ask Duck.ai] Smart detection:', detection.type, '→ categories:', suggestedCats.join(', '), 'confidence:', detection.confidence);
   } else {
     selectCategory('common');
   }
 
-  // ---- Smart positioning based on viewport ----
+  // ---- Smart positioning: ALWAYS visible on screen ----
   host.style.display = 'block';
-  // Temporarily show to measure.
   menu.hidden = false;
-  const rect = menu.getBoundingClientRect();
+
+  // Use scrollX/scrollY for absolute positioning
+  const scrollX = window.scrollX || window.pageXOffset;
+  const scrollY = window.scrollY || window.pageYOffset;
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const margin = 12;
+  const margin = 8;
 
-  const coords = opts.coords || { x: vw / 2, y: vh / 2 };
-  // Default: below-right of the selection point.
-  let left = coords.x + 8;
-  let top = coords.y + 8;
+  const coords = opts.coords || { x: vw / 2 + scrollX, y: vh / 2 + scrollY };
 
-  // If menu would overflow right, open to the left of the point.
-  if (left + rect.width > vw - margin) {
-    left = coords.x - rect.width - 8;
+  // Measure menu size (relative to viewport)
+  const rect = menu.getBoundingClientRect();
+  const menuW = rect.width || 300;
+  const menuH = rect.height || 400;
+
+  // Convert coords to viewport-relative for clamping
+  const coordVX = coords.x - scrollX;
+  const coordVY = coords.y - scrollY;
+
+  // Default: place menu near the selection, below-right
+  let leftV = coordVX + 8;
+  let topV = coordVY + 8;
+
+  // If menu overflows right, shift left
+  if (leftV + menuW > vw - margin) {
+    leftV = coordVX - menuW - 8;
   }
-  // If menu would overflow bottom, open above.
-  if (top + rect.height > vh - margin) {
-    top = coords.y - rect.height - 8;
+  // If menu overflows bottom, place above selection
+  if (topV + menuH > vh - margin) {
+    topV = coordVY - menuH - 8;
   }
 
-  // Clamp to viewport with margin.
-  left = Math.max(margin, Math.min(left, vw - rect.width - margin));
-  top = Math.max(margin, Math.min(top, vh - rect.height - margin));
+  // Final clamp — ensure menu is ALWAYS within viewport
+  leftV = Math.max(margin, Math.min(leftV, vw - menuW - margin));
+  topV = Math.max(margin, Math.min(topV, vh - menuH - margin));
 
-  // Account for scroll.
-  left += window.scrollX;
-  top += window.scrollY;
+  // If menu is taller than viewport, center it and allow scroll
+  if (menuH > vh - 2 * margin) {
+    topV = margin;
+    menu.style.maxHeight = (vh - 2 * margin) + 'px';
+  }
 
-  host.style.transform = `translate(${left}px, ${top}px)`;
+  // Convert back to absolute coordinates
+  const absLeft = leftV + scrollX;
+  const absTop = topV + scrollY;
 
-  void menu.offsetWidth; // force reflow
+  host.style.transform = `translate(${absLeft}px, ${absTop}px)`;
+
+  void menu.offsetWidth;
   menu.classList.add('open');
 }
 

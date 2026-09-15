@@ -4,9 +4,6 @@
  */
 
 import { get, set, onChange } from './storage.js';
-import { DEFAULT_SETTINGS, sanitizeSettingsPatch } from './validation.js';
-
-export { DEFAULT_SETTINGS };
 
 /** @typedef {'system'|'light'|'dark'} ThemePref */
 
@@ -27,6 +24,24 @@ export { DEFAULT_SETTINGS };
  * @property {boolean} sendUsageTelemetry   - Reserved; always false
  */
 
+/** @type {Settings} */
+export const DEFAULT_SETTINGS = {
+  floatingButton: true,
+  contextMenu: true,
+  defaultActionId: 'common.eli5',
+  defaultLanguage: 'en',
+  theme: 'system',
+  displayMode: 'sidebar',
+  autoSubmit: false,
+  responseLanguage: 'auto',
+  textDirection: 'auto',
+  smartDetection: true,
+  historyEnabled: false,
+  historyMaxItems: 50,
+  openInDuckAiOnFail: true,
+  sendUsageTelemetry: false
+};
+
 const KEY = 'settings';
 
 /** @type {Settings|null} */
@@ -42,9 +57,12 @@ let cache = null;
 export async function getSettings() {
   const stored = await get(KEY, {});
   // Merge with defaults — ensures new settings (like smartDetection)
-  // get their default value even if stored settings are from an older
-  // version, and drops any invalid stored value.
-  cache = { ...DEFAULT_SETTINGS, ...sanitizeSettingsPatch(stored) };
+  // get their default value even if stored settings are from an older version.
+  cache = { ...DEFAULT_SETTINGS, ...stored };
+  // Explicitly check smartDetection — if it's undefined, use the default.
+  if (cache.smartDetection === undefined) {
+    cache.smartDetection = DEFAULT_SETTINGS.smartDetection;
+  }
   return { ...cache };
 }
 
@@ -55,7 +73,7 @@ export async function getSettings() {
  */
 export async function setSettings(patch) {
   const current = cache || (await getSettings());
-  const next = { ...current, ...sanitizeSettingsPatch(patch) };
+  const next = { ...current, ...patch };
   await set(KEY, next);
   cache = next;
   return { ...next };

@@ -1,5 +1,5 @@
 /**
- * Background service worker (v4.4 — clean, stable)
+ * Background service worker (v4.5 — floating button dynamic registration)
  * ------------------------------------------------------------------
  * Handles:
  *   - Context menu building and clicks
@@ -7,17 +7,18 @@
  *   - Message routing from popup/content scripts
  *   - Building prompts and delivering to Duck.ai
  *   - User custom prompts (user- prefix)
+ *   - Floating button script registration (Chromium)
  */
 
-import '../platform/polyfill.js';
 import { buildContextMenu, resolveMenuItem } from './context-menu.js';
-import { MSG, BACKGROUND_MESSAGE_TYPES } from './messaging.js';
-import { storePendingPrompt, buildDuckAiUrl, DuckAIError } from '../services/duckai/duckai-client.js';
+import { MSG } from './messaging.js';
+import { storePendingPrompt, buildDuckAiUrl, DuckAIError, testConnection } from '../services/duckai/duckai-client.js';
 import { getSettings, onSettingsChanged } from '../services/settings.js';
-import { buildPrompt } from '../prompts/prompt-builder.js';
+import { buildPrompt, buildPagePrompt } from '../prompts/prompt-builder.js';
 import { getAction } from '../prompts/actions.js';
-import { recordAction } from '../services/recent-actions.js';
-import { debugLog } from '../utils/debug.js';
+import { recordAction, getRecentActions } from '../services/recent-actions.js';
+import { getSelectionFromTab, getPageContentFromTab, getPageMetaFromTab, promptInputInTab } from '../services/tab-script.js';
+import { syncFloatingButtonState, getFloatingButtonStatus, registerFloatingButtonScript, unregisterFloatingButtonScript, isFloatingButtonScriptRegistered } from '../services/floating-button-controller.js';
 
 const DUCKAI_URL = 'https://duck.ai/';
 
@@ -44,16 +45,53 @@ try {
 } catch (e) { console.error('Duck.ai: commands listener', e); }
 
 try {
+  if (browser.runtime && browser.runtime.onInstalled) {
+    browser.runtime.onInstalled.addListener(handleInstalled);
+  }
+} catch (e) { console.error('Duck.ai: onInstalled listener', e); }
+
+try {
   onSettingsChanged(async (s) => {
     try {
       if (s.contextMenu) await buildContextMenu();
       else await browser.contextMenus.removeAll();
     } catch (e) { console.error('Duck.ai: ctx rebuild', e); }
+    try {
+      // Sync floating button state when setting changes.
+      await syncFloatingButtonState(s.floatingButton);
+    } catch (e) { console.error('Duck.ai: floating button sync', e); }
   });
 } catch (e) { console.error('Duck.ai: settings listener', e); }
 
 // Build context menu (async, non-blocking).
 buildContextMenu().catch((e) => console.error('Duck.ai: ctx menu build', e));
+
+// On startup, sync floating button state (catches browser restart with
+// permission already granted but script not registered).
+try {
+  getSettings().then((s) => syncFloatingButtonState(s.floatingButton)).catch(() => {});
+} catch (e) { /* ignore */ }
+
+// ====== onInstalled handler ======
+async function handleInstalled(details) {
+  try {
+    const settings = await getSettings();
+    // Sync floating button state on install/update.
+    await syncFloatingButtonState(settings.floatingButton);
+
+    if (details.reason === 'install') {
+      console.log('[Ask Duck.ai] Extension installed — opening onboarding page');
+      // Open the onboarding page on first install.
+      await browser.tabs.create({
+        url: browser.runtime.getURL('src/options/onboarding.html')
+      });
+    } else if (details.reason === 'update') {
+      console.log('[Ask Duck.ai] Extension updated to', browser.runtime.getManifest().version);
+    }
+  } catch (e) {
+    console.error('Duck.ai: onInstalled error', e);
+  }
+}
 
 // ====== Context menu click handler ======
 async function handleContextMenuClick(info, tab) {
@@ -87,13 +125,11 @@ async function handleContextMenuClick(info, tab) {
     if (!selection) return;
 
     if (resolved.choose) {
-      // Ask user for custom language.
+      // Ask user for custom language via the active tab (cross-browser).
       try {
-        const resp = await browser.tabs.sendMessage(tab.id, {
-          type: MSG.PROMPT_INPUT, payload: { prompt: 'Enter target language:' }
-        });
-        if (resp && resp.value) {
-          await executeAction('translate', selection, resp.value.trim());
+        const value = await promptInputInTab(tab.id, 'Enter target language:');
+        if (value) {
+          await executeAction('translate', selection, value.trim());
         }
       } catch {
         await executeAction('translate', selection, settings.defaultLanguage);
@@ -120,12 +156,7 @@ async function handleCommand(command) {
     if (!tabs || !tabs.length) return;
     const tab = tabs[0];
 
-    let selection = '';
-    try {
-      const resp = await browser.tabs.sendMessage(tab.id, { type: MSG.GET_SELECTION });
-      selection = (resp && resp.selection) || '';
-    } catch { /* content script not loaded */ }
-
+    const selection = await getSelectionFromTab(tab.id);
     const settings = await getSettings();
     if (selection) {
       const actionId = settings.defaultActionId;
@@ -142,11 +173,6 @@ async function handleCommand(command) {
 
 // ====== Message handler ======
 function handleMessage(message, sender, sendResponse) {
-  // Only accept messages coming from this extension's own pages and
-  // content scripts, with a known message type.
-  if (!sender || sender.id !== browser.runtime.id) return false;
-  if (!message || !BACKGROUND_MESSAGE_TYPES.has(message.type)) return false;
-
   handleMessageAsync(message, sender)
     .then((result) => sendResponse({ ok: true, result }))
     .catch((err) => sendResponse({
@@ -157,6 +183,8 @@ function handleMessage(message, sender, sendResponse) {
 }
 
 async function handleMessageAsync(message, sender) {
+  if (!message || !message.type) return null;
+
   switch (message.type) {
     case MSG.RUN_ACTION: {
       const { actionId, selection, input } = message.payload || {};
@@ -166,7 +194,6 @@ async function handleMessageAsync(message, sender) {
     case MSG.PAGE_ACTION: {
       const { actionId, pageTitle, pageUrl, pageDescription } = message.payload || {};
       const settings = await getSettings();
-      const { buildPagePrompt } = await import('../prompts/prompt-builder.js');
       const prompt = await buildPagePrompt({ actionId, pageTitle, pageUrl, pageDescription });
       await recordAction(actionId);
       return await deliverPrompt(prompt, settings);
@@ -179,10 +206,7 @@ async function handleMessageAsync(message, sender) {
       const tab = tabs[0];
       let selection = message.payload?.selection || '';
       if (!selection) {
-        try {
-          const resp = await browser.tabs.sendMessage(tab.id, { type: MSG.GET_SELECTION });
-          selection = (resp && resp.selection) || '';
-        } catch { /* ignore */ }
+        selection = await getSelectionFromTab(tab.id);
       }
       if (!selection) throw new DuckAIError('No text selected', { code: 'duckai_empty_request' });
       return await executeAction(actionId, selection, input);
@@ -196,8 +220,50 @@ async function handleMessageAsync(message, sender) {
       return { ok: true };
 
     case MSG.GET_RECENT_ACTIONS: {
-      const { getRecentActions } = await import('../services/recent-actions.js');
       return { actions: await getRecentActions() };
+    }
+
+    case 'test-connection': {
+      return await testConnection();
+    }
+
+    case MSG.FLOATING_BUTTON_STATUS: {
+      const status = await getFloatingButtonStatus();
+      const settings = await getSettings();
+      return { ...status, enabled: settings.floatingButton };
+    }
+
+    case MSG.FLOATING_BUTTON_REGISTER:
+    case 'floating-button-register': {
+      // registerFloatingButtonScript() handles everything internally:
+      // - checks permission
+      // - unregisters old script (idempotent)
+      // - registers new script
+      // - injects into ALL open tabs
+      // Returns {success: boolean, injectedCount?: number, error?: string}
+      const result = await registerFloatingButtonScript();
+      if (!result.success) {
+        return { success: false, error: result.error || 'Unknown error' };
+      }
+      return { success: true, injectedCount: result.injectedCount || 0 };
+    }
+
+    case MSG.FLOATING_BUTTON_UNREGISTER:
+    case 'floating-button-unregister': {
+      return await unregisterFloatingButtonScript();
+    }
+
+    case MSG.FLOATING_BUTTON_SYNC: {
+      const settings = await getSettings();
+      return await syncFloatingButtonState(settings.floatingButton);
+    }
+
+    case 'floating-button-is-registered': {
+      // Route through the controller — it handles Firefox (returns true)
+      // and Chromium (checks scripting API) internally. This avoids
+      // any direct browser.scripting.* reference in the service worker,
+      // which would trigger Firefox warnings about unimplemented APIs.
+      return await isFloatingButtonScriptRegistered();
     }
 
     default:
@@ -234,29 +300,8 @@ async function executeAction(actionId, selection, input) {
 // ====== Send page to Duck.ai ======
 async function sendPageToDuckAi(tab, actionId) {
   try {
-    let pageMeta = { title: tab.title || '', url: tab.url || '', text: '' };
-    try {
-      const resp = await browser.tabs.sendMessage(tab.id, { type: MSG.GET_PAGE_CONTENT });
-      if (resp) {
-        pageMeta.title = resp.title || pageMeta.title;
-        pageMeta.url = resp.url || pageMeta.url;
-        pageMeta.text = resp.text || '';
-      }
-    } catch { /* content script not loaded */ }
-
-    // Reading the page body is a privacy-sensitive step: never send it
-    // without an explicit confirmation from the user for this page.
-    if (pageMeta.text) {
-      let approved = false;
-      try {
-        const resp = await browser.tabs.sendMessage(tab.id, {
-          type: MSG.CONFIRM_PAGE_SEND,
-          payload: { chars: pageMeta.text.length }
-        });
-        approved = !!(resp && resp.approved);
-      } catch { approved = false; }
-      if (!approved) return;
-    }
+    const pageContent = await getPageContentFromTab(tab.id);
+    const pageMeta = { title: pageContent.title || tab.title || '', url: pageContent.url || tab.url || '', text: pageContent.text || '' };
 
     let prompt;
     if (actionId) {
@@ -293,7 +338,7 @@ async function deliverPrompt(prompt, settings) {
   // 1. Store the prompt — returns a unique ID.
   const promptId = await storePendingPrompt(prompt, settings.autoSubmit);
   const url = buildDuckAiUrl(promptId);
-  debugLog('[Duck.ai] Prompt stored (' + prompt.length + ' chars, id=' + promptId + ')');
+  console.log('[Duck.ai] Prompt stored (' + prompt.length + ' chars, id=' + promptId + ')');
 
   // 2. Try to reuse an existing duck.ai tab first.
   try {
@@ -305,7 +350,7 @@ async function deliverPrompt(prompt, settings) {
       try {
         await browser.windows.update(existingTab.windowId, { focused: true });
       } catch {}
-      debugLog('[Duck.ai] Reused existing tab:', existingTab.id);
+      console.log('[Duck.ai] Reused existing tab:', existingTab.id);
       return { ok: true, mode: 'tab-reused' };
     }
   } catch (e) {
@@ -325,9 +370,8 @@ async function findExistingDuckAiTab() {
   try {
     const tabs = await browser.tabs.query({ url: 'https://duck.ai/*' });
     if (tabs && tabs.length > 0) {
-      // Prefer the most recently accessed tab; `lastAccessed` is not
-      // guaranteed to exist on every engine, so fall back to order.
-      return [...tabs].sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
+      // Return the first duck.ai tab (prefer the most recently active).
+      return tabs[0];
     }
   } catch (e) {
     console.warn('[Duck.ai] findExistingDuckAiTab', e);
@@ -347,8 +391,7 @@ async function openDuckAiPopupWindow(url) {
     if (left < 0) left = 0;
     if (top < 0) top = 0;
   } catch {
-    // `screen` is not available in a service worker — use fixed values.
-    left = 20;
+    left = Math.max(0, screen.availWidth - width - 20);
     top = 40;
   }
   try {

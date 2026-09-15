@@ -97,9 +97,8 @@ export async function buildContextMenu() {
           contexts: SEL_CTX
         });
         for (const p of userPrompts) {
-          // p.id is already prefixed with 'user-'.
           browser.contextMenus.create({
-            id: p.id,
+            id: `user-${p.id}`,
             parentId: 'cat-myprompts',
             title: p.label,
             contexts: SEL_CTX
@@ -133,8 +132,7 @@ export async function buildContextMenu() {
   }
 }
 
-export function resolveMenuItem(rawMenuItemId) {
-  const menuItemId = String(rawMenuItemId || '');
+export function resolveMenuItem(menuItemId) {
   if (menuItemId.startsWith('translate-')) {
     if (menuItemId === 'translate-choose' || menuItemId === 'translate-sep') {
       return { actionId: 'translate', input: null, choose: true };
@@ -146,9 +144,8 @@ export function resolveMenuItem(rawMenuItemId) {
     const actionId = menuItemId.replace('action-', '');
     if (getAction(actionId)) return { actionId };
   }
-  // User custom prompts: user-<id>. Existence is checked by the prompt
-  // builder, which throws for an unknown id.
-  if (/^user-[a-z0-9-]+$/i.test(menuItemId)) {
+  // User custom prompts: user-<id>
+  if (menuItemId.startsWith('user-')) {
     return { actionId: menuItemId };
   }
   return null;

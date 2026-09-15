@@ -27,7 +27,7 @@
     "default_popup": "src/popup/popup.html"
   },
   "background": {
-    "scripts": ["src/background/service-worker.js"],
+    "service_worker": "src/background/service-worker.js",
     "type": "module"
   },
   "options_ui": {
@@ -47,16 +47,10 @@
   "host_permissions": [
     "https://duck.ai/*"
   ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
   "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": [
-        "src/content/content-script.js"
-      ],
-      "run_at": "document_idle",
-      "all_frames": false,
-      "match_about_blank": false
-    },
     {
       "matches": ["https://duck.ai/*"],
       "js": ["src/content/duckai-injector.js"],
@@ -67,6 +61,7 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "src/content/content-script.js",
         "src/content/content-main.js",
         "src/content/floating-button.js",
         "src/content/action-menu.js",
@@ -94,6 +89,8 @@
         "src/utils/theme.js",
         "src/utils/helpers.js",
         "src/utils/release-notes.js",
+        "src/platform/browser-api.js",
+        "src/platform/polyfill.js",
         "icons/icon-48.png"
       ],
       "matches": ["<all_urls>"]
@@ -117,14 +114,5 @@
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'self'; form-action 'self'; connect-src 'self' https://duck.ai"
-  },
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "duckai-assistant@duckai-assistant.github.io",
-      "strict_min_version": "142.0",
-      "data_collection_permissions": {
-        "required": ["none"]
-      }
-    }
   }
 }
