@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Duck.ai — Browser Extension</title>
+  <meta name="description" content="Ask Duck.ai — a browser extension that lets you invoke Duck.ai actions on any selected text. Explain, translate, summarize, debug code, and more." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f9fafb;
+      --accent: #1f2937;
+      --accent-hover: #111827;
+      --link: #2563eb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --fg: #e5e7eb;
+        --muted: #9ca3af;
+        --border: #1f2937;
+        --hover: #1f2937;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --link: #60a5fa;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero img.logo {
+      width: 88px;
+      height: 88px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .hero h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .hero .tagline {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+    .cta {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 80ms ease, background 120ms ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: 2px solid var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--fg);
+      border: 2px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--hover); }
+
+    .features {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+    .feature {
+      text-align: center;
+      padding: 24px;
+      background: var(--hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .feature-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+    .feature h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .feature p {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer {
+      margin-top: auto;
+      padding: 32px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .footer a {
+      color: var(--muted);
+      text-decoration: none;
+      margin: 0 8px;
+    }
+    .footer a:hover { color: var(--fg); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 28px; }
+      .hero .tagline { font-size: 16px; }
+      .cta { flex-direction: column; align-items: center; }
+      .btn { width: 100%; justify-content: center; max-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <img class="logo" src="icons/icon-128.png" alt="Ask Duck.ai" />
+    <h1>Ask Duck.ai</h1>
+    <p class="tagline">Quick AI actions for any webpage — explain, translate, summarize, debug code, and more.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://addons.mozilla.org/firefox/addon/ask-duckai/" target="_blank" rel="noopener">
+        Add to Firefox
+      </a>
+      <a class="btn btn-secondary" href="https://chromewebstore.google.com/" target="_blank" rel="noopener">
+        Add to Chrome
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/Monessem/Ask-Duck.ai" target="_blank" rel="noopener">
+        Source Code
+      </a>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="feature">
+      <div class="feature-icon">🦆</div>
+      <h3>Powered by Duck.ai</h3>
+      <p>Uses DuckDuckGo's AI chat — no API keys, no accounts, no tracking.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🔒</div>
+      <h3>Privacy First</h3>
+      <p>No telemetry, no analytics, no data collection. Your text goes directly to Duck.ai.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h3>Lightweight</h3>
+      <p>Zero polling intervals, event-driven architecture, minimal memory footprint.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🌍</div>
+      <h3>Cross-Browser</h3>
+      <p>Works on Firefox, Chrome, Edge, and Opera. Full RTL support for Arabic.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">🛠️</div>
+      <h3>70+ Actions</h3>
+      <p>12 categories: Common, Translate, Grammar, Code, Research, Chef, SEO, Security, and more.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⭐</div>
+      <h3>Custom Prompts</h3>
+      <p>Create your own prompts in Settings → My Prompts. Reuse them anywhere.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>
+      <a href="privacy.html">Privacy Policy</a> ·
+      <a href="https://github.com/Monessem/Ask-Duck.ai" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://github.com/Monessem/Ask-Duck.ai/issues" target="_blank" rel="noopener">Support</a> ·
+      <a href="https://buymeacoffee.com/monessem" target="_blank" rel="noopener">Buy Me a Coffee</a>
+    </p>
+    <p style="margin-top:8px">Ask Duck.ai is an unofficial, open-source extension. Not affiliated with DuckDuckGo.</p>
+  </footer>
+</body>
+</html>

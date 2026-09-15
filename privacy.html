@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Ask Duck.ai</title>
+  <meta name="description" content="Privacy policy for the Ask Duck.ai browser extension. No tracking, no accounts, no telemetry." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --hover: #f9fafb;
+      --accent: #2563eb;
+      --code-bg: #f3f4f6;
+      --code-fg: #1f2937;
+      --success: #059669;
+      --warning: #d97706;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --fg: #e5e7eb;
+        --muted: #9ca3af;
+        --border: #1f2937;
+        --hover: #1f2937;
+        --accent: #3b82f6;
+        --code-bg: #1f2937;
+        --code-fg: #f1f5f9;
+        --success: #10b981;
+        --warning: #f59e0b;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .updated {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 12px;
+      background: var(--code-bg);
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    nav.toc {
+      background: var(--hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    nav.toc h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    nav.toc ol {
+      list-style: none;
+      counter-reset: toc;
+    }
+    nav.toc ol li {
+      counter-increment: toc;
+      margin-bottom: 6px;
+    }
+    nav.toc ol li::before {
+      content: counter(toc) ".";
+      color: var(--accent);
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    nav.toc a {
+      color: var(--fg);
+      text-decoration: none;
+    }
+    nav.toc a:hover { text-decoration: underline; }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 40px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin: 28px 0 12px;
+    }
+    p {
+      margin-bottom: 14px;
+    }
+    ul, ol {
+      margin-bottom: 14px;
+      padding-left: 24px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    strong {
+      font-weight: 600;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+
+    .callout {
+      background: var(--hover);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--success);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .callout.warning {
+      border-left-color: var(--warning);
+    }
+    .callout-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    code {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      font-weight: 600;
+      background: var(--hover);
+    }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    footer a {
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px 48px; }
+      h1 { font-size: 22px; }
+      h2 { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img class="logo" src="https://monessem.github.io/Ask-Duck.ai/icons/icon-128.png" alt="Ask Duck.ai logo" />
+      <h1>Privacy Policy</h1>
+      <p class="subtitle">Ask Duck.ai Browser Extension</p>
+      <span class="updated">Last updated: September 15, 2026</span>
+    </header>
+
+    <nav class="toc">
+      <h2>Table of Contents</h2>
+      <ol>
+        <li><a href="#summary">Summary</a></li>
+        <li><a href="#what-we-collect">What We Collect</a></li>
+        <li><a href="#what-we-do-not-collect">What We Do Not Collect</a></li>
+        <li><a href="#how-it-works">How the Extension Works</a></li>
+        <li><a href="#duck-ai">Duck.ai Relationship</a></li>
+        <li><a href="#permissions">Permissions Explained</a></li>
+        <li><a href="#data-storage">Local Data Storage</a></li>
+        <li><a href="#third-party">Third-Party Services</a></li>
+        <li><a href="#children">Children's Privacy</a></li>
+        <li><a href="#changes">Changes to This Policy</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="summary">1. Summary</h2>
+    <div class="callout">
+      <div class="callout-title">TL;DR</div>
+      <p><strong>Ask Duck.ai does not collect, store, or transmit any personal data to our servers.</strong> There are no servers. The extension runs entirely in your browser. Your selected text is sent directly to Duck.ai (DuckDuckGo's AI chat service) — we never see it.</p>
+    </div>
+    <p>Ask Duck.ai is a browser extension that lets you invoke Duck.ai actions (explain, translate, summarize, debug code, etc.) on any selected text or webpage. The extension is open-source, privacy-by-default, and designed to minimize data exposure at every layer.</p>
+    <p>This privacy policy explains what data the extension accesses, how it processes that data, and the choices you have. The extension complies with GDPR, CCPA, and other privacy regulations by design — because it simply does not collect personal data.</p>
+
+    <h2 id="what-we-collect">2. What We Collect</h2>
+    <p><strong>Nothing.</strong> The Ask Duck.ai extension does not collect any personal information from you. Specifically:</p>
+    <ul>
+      <li>No accounts, no login, no email addresses</li>
+      <li>No IP addresses are logged or stored</li>
+      <li>No browsing history is tracked</li>
+      <li>No analytics or telemetry are sent to us</li>
+      <li>No device fingerprints are collected</li>
+      <li>No advertising identifiers are read</li>
+    </ul>
+    <p>The extension's <code>sendUsageTelemetry</code> setting exists in the code but is permanently set to <code>false</code> — it is never enabled, and no telemetry code path is ever executed.</p>
+
+    <h2 id="what-we-do-not-collect">3. What We Do Not Collect</h2>
+    <p>To be explicit, the following are NOT collected, transmitted, or stored by the extension:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Data Type</th>
+          <th>Collected?</th>
+          <th>Explanation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Personally identifiable information</td>
+          <td><strong>No</strong></td>
+          <td>No name, email, address, phone, or identifiers</td>
+        </tr>
+        <tr>
+          <td>Browsing history</td>
+          <td><strong>No</strong></td>
+          <td>Page URLs are only read when you invoke an action</td>
+        </tr>
+        <tr>
+          <td>Search queries</td>
+          <td><strong>No</strong></td>
+          <td>Only the text you explicitly select is processed</td>
+        </tr>
+        <tr>
+          <td>Form data</td>
+          <td><strong>No</strong></td>
+          <td>Form fields are never read</td>
+        </tr>
+        <tr>
+          <td>Cookies</td>
+          <td><strong>No</strong></td>
+          <td>The extension does not read or set cookies</td>
+        </tr>
+        <tr>
+          <td>System information</td>
+          <td><strong>No</strong></td>
+          <td>No OS, hardware, or browser version data is collected</td>
+        </tr>
+        <tr>
+          <td>Location data</td>
+          <td><strong>No</strong></td>
+          <td>Geolocation is never accessed</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="how-it-works">4. How the Extension Works</h2>
+    <p>When you select text on a webpage and click the floating Duck.ai button (or use the context menu, popup, or keyboard shortcut), the following happens:</p>
+    <ol>
+      <li><strong>Your selected text</strong> is read locally by the extension's content script</li>
+      <li><strong>A prompt is built</strong> by combining your selected text with the action's instruction (e.g., "Translate this into English:")</li>
+      <li><strong>The prompt is stored temporarily</strong> in the browser's local storage, indexed by a random ID</li>
+      <li><strong>A Duck.ai tab is opened</strong> (or reused if one is already open) with a URL like <code>https://duck.ai/#p=&lt;random-id&gt;</code></li>
+      <li><strong>The Duck.ai injector content script</strong> reads the prompt from local storage, fills it into Duck.ai's chat input, and (optionally) auto-submits</li>
+      <li><strong>The prompt is immediately deleted</strong> from local storage after injection</li>
+    </ol>
+    <p>At no point does your selected text pass through any server controlled by the extension developers. The text travels directly from the webpage → to the browser's local storage → to Duck.ai's servers.</p>
+
+    <h2 id="duck-ai">5. Duck.ai Relationship</h2>
+    <p>Ask Duck.ai is an <strong>independent, unofficial extension</strong>. It is not affiliated with, endorsed by, or sponsored by DuckDuckGo.</p>
+    <p>The extension uses DuckDuckGo's public Duck.ai web interface (available at <a href="https://duck.ai/" target="_blank" rel="noopener">https://duck.ai/</a>) to process your prompts. When Duck.ai responds to your prompt:</p>
+    <ul>
+      <li>Your selected text is sent to DuckDuckGo's servers for AI processing</li>
+      <li>DuckDuckGo's privacy policy applies to this data transmission</li>
+      <li>We recommend reviewing DuckDuckGo's <a href="https://duckduckgo.com/duckai/privacy-terms" target="_blank" rel="noopener">Duck.ai Privacy Terms</a></li>
+    </ul>
+    <div class="callout warning">
+      <div class="callout-title">Important</div>
+      <p>The Ask Duck.ai extension does not control what DuckDuckGo does with your prompts once they reach Duck.ai's servers. The extension is simply a convenience wrapper that opens Duck.ai and fills in the chat input. All AI processing is done by DuckDuckGo under their own privacy policy.</p>
+    </div>
+    <p>From time to time, Duck.ai may show a CAPTCHA challenge ("Unfortunately, bots use DuckDuckGo too"). This is DuckDuckGo's anti-bot measure — the extension has no control over it. When a CAPTCHA appears, the extension waits for you to solve it, then automatically injects the prompt.</p>
+
+    <h2 id="permissions">6. Permissions Explained</h2>
+    <p>The extension requests the following permissions. Each is necessary for the extension to function, and each is explained in plain language:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Permission</th>
+          <th>Why It's Needed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>storage</code></td>
+          <td>To save your settings (theme, language, shortcuts) and temporarily hold prompts between tabs. All data is stored locally on your device — never on a server.</td>
+        </tr>
+        <tr>
+          <td><code>contextMenus</code></td>
+          <td>To add "Ask Duck.ai" entries to the right-click menu so you can invoke actions on selected text.</td>
+        </tr>
+        <tr>
+          <td><code>activeTab</code></td>
+          <td>To read the text you've selected on the current page when you click the toolbar icon or use a keyboard shortcut. Only triggered by your explicit action.</td>
+        </tr>
+        <tr>
+          <td><code>scripting</code></td>
+          <td>On Chromium browsers, to dynamically inject the floating button content script on pages where you select text. Only activated after you grant optional permission.</td>
+        </tr>
+        <tr>
+          <td><code>tabs</code></td>
+          <td>To open or reuse the Duck.ai tab when you invoke an action. The extension reads tab URLs only to check if a Duck.ai tab is already open.</td>
+        </tr>
+        <tr>
+          <td><code>clipboardWrite</code></td>
+          <td>To copy the prompt to your clipboard as a fallback if direct injection into Duck.ai fails.</td>
+        </tr>
+        <tr>
+          <td><code>notifications</code></td>
+          <td>To show desktop notifications when a prompt is delivered or an error occurs. No notification content is sent anywhere.</td>
+        </tr>
+        <tr>
+          <td><code>downloads</code></td>
+          <td>To let you export your settings and custom prompts as a backup file. You choose where to save it.</td>
+        </tr>
+        <tr>
+          <td><code>host_permissions: https://duck.ai/*</code></td>
+          <td>So the Duck.ai injector content script can run on <code>duck.ai</code> pages and fill in the chat input.</td>
+        </tr>
+        <tr>
+          <td><code>optional_host_permissions: &lt;all_urls&gt;</code></td>
+          <td>On Chromium, so the floating button can appear on any webpage. This is OPTIONAL — you grant it explicitly, and can revoke it at any time in Settings.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="data-storage">7. Local Data Storage</h2>
+    <p>All data the extension stores is kept in your browser's local storage (<code>browser.storage.local</code>). This data never leaves your device except when explicitly sent to Duck.ai as part of a prompt.</p>
+    <p>The following data is stored locally:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Purpose</th>
+          <th>Retention</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Settings</td>
+          <td>Your preferences (theme, language, shortcuts, floating button on/off, etc.)</td>
+          <td>Until you uninstall the extension or reset settings</td>
+        </tr>
+        <tr>
+          <td>Custom prompts</td>
+          <td>Your user-defined prompt templates in "My Prompts"</td>
+          <td>Until you delete them or uninstall</td>
+        </tr>
+        <tr>
+          <td>Recent actions</td>
+          <td>The last 5 actions you used (for the Quick Actions bar)</td>
+          <td>Rolling — oldest is removed when 6th action is added</td>
+        </tr>
+        <tr>
+          <td>Pending prompts</td>
+          <td>Temporarily holds the prompt text between the source tab and the Duck.ai tab</td>
+          <td>Deleted immediately after injection (seconds)</td>
+        </tr>
+        <tr>
+          <td>Conversation history</td>
+          <td>Optional — disabled by default. If you enable it, stores a local list of Duck.ai conversation titles</td>
+          <td>Up to 50 conversations, then oldest is removed</td>
+        </tr>
+        <tr>
+          <td>Last seen release</td>
+          <td>The version number of the last update notification you saw</td>
+          <td>Until next version bump</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>To clear all extension data at any time: open Settings → Privacy → "Clear all data". You can also clear it via your browser's extension management page.</p>
+
+    <h2 id="third-party">8. Third-Party Services</h2>
+    <p>The extension interacts with the following third-party services:</p>
+    <ul>
+      <li><strong>Duck.ai (duck.ai)</strong> — Your selected text is sent to DuckDuckGo's Duck.ai service when you invoke an action. DuckDuckGo's <a href="https://duckduckgo.com/duckai/privacy-terms" target="_blank" rel="noopener">privacy terms</a> apply to this transmission.</li>
+      <li><strong>Buy Me a Coffee (buymeacoffee.com)</strong> — If you click the "Buy Me a Coffee" button, you are taken to buymeacoffee.com. Their privacy policy applies. No data is shared between the extension and this service.</li>
+    </ul>
+    <p>The extension does NOT use any of the following:</p>
+    <ul>
+      <li>Google Analytics or any analytics service</li>
+      <li>Advertising networks</li>
+      <li>Social media trackers</li>
+      <li>Error reporting services (e.g., Sentry)</li>
+      <li>CDN-hosted libraries (all code is bundled)</li>
+    </ul>
+
+    <h2 id="children">9. Children's Privacy</h2>
+    <p>The extension is not directed at children under 13. We do not knowingly collect any data from anyone, regardless of age. If you believe a child has interacted with the extension and have concerns, you can clear all data via Settings → Privacy → "Clear all data".</p>
+
+    <h2 id="changes">10. Changes to This Policy</h2>
+    <p>We may update this privacy policy from time to time. When we do, we will:</p>
+    <ul>
+      <li>Update the "Last updated" date at the top of this page</li>
+      <li>Bump the extension version number</li>
+      <li>Show a one-time update notification banner in the toolbar popup</li>
+    </ul>
+    <p>The current version of this privacy policy is always available at <a href="https://monessem.github.io/Ask-Duck.ai/privacy.html">https://monessem.github.io/Ask-Duck.ai/privacy.html</a>.</p>
+
+    <h2 id="contact">11. Contact</h2>
+    <p>This extension is open-source. The source code is available at <a href="https://github.com/Monessem/Ask-Duck.ai" target="_blank" rel="noopener">github.com/Monessem/Ask-Duck.ai</a>.</p>
+    <p>If you have questions about this privacy policy or the extension, you can:</p>
+    <ul>
+      <li>Open an issue on <a href="https://github.com/Monessem/Ask-Duck.ai/issues" target="_blank" rel="noopener">GitHub Issues</a></li>
+      <li>Use the in-extension Support page (Settings → Support tab)</li>
+    </ul>
+    <p>Since we don't collect any data, there is no need for a data deletion request — simply uninstall the extension and all local data is removed automatically.</p>
+
+    <footer>
+      <p>Ask Duck.ai is an unofficial, open-source browser extension.<br />
+      Not affiliated with DuckDuckGo. Duck.ai is a trademark of DuckDuckGo LLC.</p>
+      <p style="margin-top:12px"><a href="https://github.com/Monessem/Ask-Duck.ai">Source Code</a> · <a href="https://github.com/Monessem/Ask-Duck.ai/blob/main/LICENSE">License</a></p>
+    </footer>
+  </div>
+</body>
+</html>
