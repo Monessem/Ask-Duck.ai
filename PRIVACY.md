@@ -66,7 +66,6 @@ This document explains, in plain language, what data the Ask Duck.ai extension p
 | `activeTab` | Reads the current tab's selection when you invoke the assistant. |
 | `scripting` | Injects the content script on pages where it hasn't loaded yet. |
 | `clipboardWrite` | Copies responses, code blocks, and prompts to the clipboard. |
-| `notifications` | Reserved for optional status notifications (not currently used). |
 | `host: https://duck.ai/*` | Required to talk to Duck.ai. |
 
 The extension does **not** request:
@@ -113,7 +112,7 @@ No step in this flow sends data anywhere except `https://duck.ai/*`.
 | Clear conversation history | Settings → Privacy → Clear conversation history |
 | Clear all extension data (settings + history) | Settings → Privacy → Clear all extension data |
 | Disable history collection | Settings → Privacy → Store conversation history locally (toggle off) |
-| Remove the extension entirely | about:addons → Ask Duck.ai → Remove |
+| Remove the extension entirely | chrome://extensions → Ask Duck.ai → Remove |
 
 Removing the extension deletes all locally stored data automatically.
 

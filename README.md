@@ -1,6 +1,6 @@
 # Ask Duck.ai
 
-A polished, production-grade Firefox extension that lets you invoke **Duck.ai** on any selected webpage text — explain, translate, rewrite, analyze, research, and debug code directly from Firefox.
+A polished, production-grade browser extension that lets you invoke **Duck.ai** on any selected webpage text — explain, translate, rewrite, analyze, research, and debug code directly from your browser.
 
 > **Not affiliated with DuckDuckGo.** This is an independent, open-source extension that uses Duck.ai's public web interface under the same terms as a regular visitor. See the [Disclaimer](#disclaimer) section.
 
@@ -53,10 +53,10 @@ A polished, production-grade Firefox extension that lets you invoke **Duck.ai** 
   - General — floating button, context menu, default action, default language, theme
   - AI — model, response length, temperature, timeout, connection test
   - Privacy — history toggle, history limits, clear history, clear all data, full data & permissions audit
-  - Shortcuts — Firefox shortcut management instructions
+  - Shortcuts — browser shortcut management instructions
   - About — integration documentation and disclaimer
 - **Themes** — System / Light / Dark, with automatic OS preference detection.
-- **Localization** — English and Arabic (with full RTL support). The UI is fully locale-aware via Firefox's `__MSG_*` system.
+- **Localization** — English and Arabic (with full RTL support). The UI is fully locale-aware via the browser `__MSG_*` system.
 - **Privacy by default** — conversation history is **OFF** by default; no telemetry; selected text is sent only to `https://duck.ai/*`.
 - **Manifest V3** with strict CSP, no `eval()`, no dynamic script execution, minimal permissions.
 
@@ -96,7 +96,7 @@ src/services/duckai/
 
 ```
 duckai-assistant/
-├── manifest.json              # Manifest V3, Firefox target
+├── manifest.json              # Manifest V3, Chromium target
 ├── README.md
 ├── PRIVACY.md
 ├── LICENSE
@@ -154,14 +154,14 @@ duckai-assistant/
 
 Use this method to load the extension directly from source without signing it. Perfect for development and quick trials.
 
-1. Open Firefox.
-2. In the address bar, type `about:debugging` and press Enter.
-3. In the left sidebar, click **This Firefox**.
-4. Click the **Load Temporary Add-on…** button.
+1. Open your browser.
+2. In the address bar, type `chrome://extensions` and press Enter.
+3. In the left sidebar, click **Extensions**.
+4. Click the **Load unpacked** button.
 5. Select any file inside the `duckai-assistant/` folder — e.g. `manifest.json`.
 6. The extension is now loaded. The Ask Duck.ai icon should appear in your toolbar.
 
-> Temporary add-ons are removed when Firefox closes. To make the install permanent, see the next section.
+> Unpacked extensions are removed when the browser closes. To make the install permanent, see the next section.
 
 ### Permanent install (signed XPI)
 
@@ -182,19 +182,19 @@ For self-distribution to a small audience, you can also use an **unlisted** sign
 
 ### Requirements
 
-- Firefox 115+ (ESR or current)
+- Chrome 110+ / Edge 110+ / Opera 96+ (ESR or current)
 - No build step is required — the extension uses native ES modules and runs directly from source.
 - Optional: Python 3 with Pillow if you want to regenerate icons (`scripts/make-icons.py`).
 
 ### Running locally
 
 1. `git clone` this repository (or unzip the source).
-2. Open `about:debugging` in Firefox → **This Firefox** → **Load Temporary Add-on…** → select `manifest.json`.
+2. Open `chrome://extensions` in your browser → **Extensions** → **Load unpacked** → select the build folder.
 3. The extension loads. Use the toolbar icon, right-click selected text, or press `Ctrl+Shift+D`.
 
 ### Why the content script uses dynamic `import()`
 
-Firefox loads manifest-declared content scripts as **classic scripts**, which means top-level `import`/`export` is not allowed. The extension works around this with a small bootstrap (`src/content/content-script.js`) that calls `import()` dynamically to load the real ES module (`src/content/content-main.js`). All module files needed by the content script are listed in `web_accessible_resources` in `manifest.json` so Firefox permits the dynamic import.
+The browser loads manifest-declared content scripts as **classic scripts**, which means top-level `import`/`export` is not allowed. The extension works around this with a small bootstrap (`src/content/content-script.js`) that calls `import()` dynamically to load the real ES module (`src/content/content-main.js`). All module files needed by the content script are listed in `web_accessible_resources` in `manifest.json` so the browser permits the dynamic import.
 
 The background service worker and the popup/options pages use static imports normally, because:
 - The background is declared with `"type": "module"` in the manifest.
@@ -203,7 +203,7 @@ The background service worker and the popup/options pages use static imports nor
 ### Iterating
 
 - Edit any file under `src/` or `_locales/`.
-- In `about:debugging` → **This Firefox**, click **Reload** next to Ask Duck.ai.
+- In `chrome://extensions` → **Extensions**, click **Reload** next to Ask Duck.ai.
 - For content script changes, also reload the target webpage.
 
 ### Linting (optional)
@@ -224,7 +224,7 @@ tsc --noEmit --allowJs --checkJs --target ES2022 --module ESNext \
 
 ## Build Instructions
 
-The extension has **no compile step** — what you see in `src/` is what runs in Firefox. To produce a distributable package:
+The extension has **no compile step** — what you see in `src/` is what runs in your browser. To produce a distributable package:
 
 ```bash
 # From the project root:
@@ -280,7 +280,7 @@ You can always switch to any other category from the panel's action selector.
 
 To customize:
 
-1. Open `about:addons`.
+1. Open `chrome://extensions`.
 2. Click the gear icon → **Manage Extension Shortcuts**.
 3. Find **Ask Duck.ai** and edit the shortcuts.
 
@@ -332,7 +332,7 @@ To add a new language:
 
 1. Create `_locales/<code>/messages.json` (copy from `_locales/en/`).
 2. Translate every `message` field.
-3. Reload the extension. Firefox will pick up the new locale based on the user's browser language.
+3. Reload the extension. The browser will pick up the new locale based on the user's browser language.
 
 All UI strings use the `__MSG_key__` syntax in `manifest.json` and the `t('key')` helper in JavaScript.
 
@@ -349,7 +349,7 @@ All UI strings use the `__MSG_key__` syntax in `manifest.json` and the `t('key')
 
 **The floating button doesn't appear.**
 - Make sure **Settings → General → Floating selection button** is on.
-- Some pages (PDF viewer, internal Firefox pages, `about:*`) block content scripts. This is a Firefox limitation.
+- Some pages (PDF viewer, internal browser pages, `about:*`) block content scripts. This is a browser limitation.
 
 **Right-click menu is missing.**
 - Make sure **Settings → General → Context menu** is on.
@@ -366,7 +366,7 @@ All UI strings use the `__MSG_key__` syntax in `manifest.json` and the `t('key')
 - Disable any aggressive privacy extensions (e.g. strict cookie blockers) that might block requests to `duck.ai`.
 
 **Keyboard shortcuts don't work.**
-- Another extension may have claimed the same shortcut. Reassign in `about:addons` → gear icon → **Manage Extension Shortcuts**.
+- Another extension may have claimed the same shortcut. Reassign in `chrome://extensions` → gear icon → **Manage Extension Shortcuts**.
 
 ## Contributing
 
@@ -375,7 +375,7 @@ Contributions are welcome. Please:
 1. Open an issue describing the change you want to make.
 2. Fork the repository and create a feature branch.
 3. Make your changes. Keep the Duck.ai integration isolated in `src/services/duckai/`.
-4. Test by loading as a temporary add-on in Firefox.
+4. Test by loading as a temporary add-on in your browser.
 5. Submit a pull request.
 
 Please do not introduce:
